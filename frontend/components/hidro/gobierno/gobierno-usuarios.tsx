@@ -1,19 +1,19 @@
 "use client"
 
-import { useState } from "react"
 import { usuarios as data } from "@/lib/hidro-data"
 import { cn } from "@/lib/utils"
 
-function Toggle({ on, onToggle, label }: { on: boolean; onToggle: () => void; label: string }) {
+function Toggle({ on, label }: { on: boolean; label: string }) {
   return (
     <button
       type="button"
       role="switch"
       aria-checked={on}
       aria-label={label}
-      onClick={onToggle}
+      disabled
+      title="Disponible en una fase futura"
       className={cn(
-        "relative h-8 w-14 shrink-0 rounded-full transition-colors",
+        "relative h-8 w-14 shrink-0 rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-50",
         on ? "" : "bg-muted",
       )}
       style={on ? { backgroundColor: "var(--nivel-verde)" } : undefined}
@@ -29,17 +29,12 @@ function Toggle({ on, onToggle, label }: { on: boolean; onToggle: () => void; la
 }
 
 export function GobiernoUsuarios() {
-  const [users, setUsers] = useState(data)
-
-  const toggle = (id: string) =>
-    setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, whatsapp: !u.whatsapp } : u)))
-
   return (
     <div className="overflow-hidden rounded-3xl bg-card shadow-sm">
       <div className="p-6 sm:p-8">
         <h2 className="text-xl font-bold text-foreground">Usuarios y notificaciones</h2>
         <p className="mt-1 text-base text-muted-foreground">
-          Activa las alertas por WhatsApp para cada destinatario.
+          Alertas por WhatsApp — disponibles en una fase futura.
         </p>
       </div>
       <table className="w-full">
@@ -51,13 +46,13 @@ export function GobiernoUsuarios() {
           </tr>
         </thead>
         <tbody className="divide-y divide-border">
-          {users.map((u) => (
+          {data.map((u) => (
             <tr key={u.id}>
               <td className="px-6 py-4 text-lg font-medium text-foreground sm:px-8">{u.nombre}</td>
               <td className="px-6 py-4 text-base text-muted-foreground">{u.rol}</td>
               <td className="px-6 py-4 sm:px-8">
                 <div className="flex justify-end">
-                  <Toggle on={u.whatsapp} onToggle={() => toggle(u.id)} label={`WhatsApp para ${u.nombre}`} />
+                  <Toggle on={u.whatsapp} label={`WhatsApp para ${u.nombre}`} />
                 </div>
               </td>
             </tr>
