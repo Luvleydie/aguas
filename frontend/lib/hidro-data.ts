@@ -226,18 +226,6 @@ export const usuarios: Usuario[] = [
   { id: "u5", nombre: "Comité de Cuenca Norte", rol: "Ayuntamiento de Pánuco", whatsapp: false },
 ]
 
-export interface Cultivo {
-  id: string
-  nombre: string
-  accion: "sembrar" | "esperar"
-  nota: string
-}
-
-export const cultivos: Cultivo[] = [
-  { id: "frijol", nombre: "Frijol", accion: "sembrar", nota: "Bajo consumo de agua. Buen momento para sembrar." },
-  { id: "sorgo", nombre: "Sorgo", accion: "sembrar", nota: "Resistente a la sequía. Recomendado." },
-  { id: "maiz", nombre: "Maíz", accion: "esperar", nota: "Alto consumo de agua. Espere a la próxima lluvia." },
-]
 
 export const sequiasHistoricas = [
   { anio: "2011", nivel: 28, etiqueta: "Sequía severa 2011" },

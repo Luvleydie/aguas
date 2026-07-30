@@ -1,12 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { Home, Sprout, CalendarClock, Volume2, LogOut, Check, Clock } from "lucide-react"
+import { Home, Sprout, CalendarClock, Volume2, LogOut, Sun } from "lucide-react"
 import { Semaforo } from "@/components/hidro/semaforo"
-import { cultivos, historialSemanas, nivelConfig, boletinActual } from "@/lib/hidro-data"
+import { historialSemanas, nivelConfig, boletinActual } from "@/lib/hidro-data"
+import { accionLabel, nombreCultivo, ventanaSiembra } from "@/lib/recomendacion-adapter"
+import { recomendacionActualReal } from "@/lib/recomendacion-real-mock"
 import { cn } from "@/lib/utils"
-
-const recomendacion = "Cuide el agua. Riegue solo lo necesario. Posponga la siembra de maíz."
 
 function hablar(texto: string) {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return
@@ -44,10 +44,12 @@ export function AgricultorDashboard({ onLogout }: { onLogout: () => void }) {
         {active === "inicio" && (
           <div className="flex w-full max-w-md flex-col items-center gap-8 text-center">
             <Semaforo nivel={boletinActual.nivel} size="xl" showScale showLabel={false} />
-            <p className="text-3xl font-bold leading-snug text-foreground text-balance">{recomendacion}</p>
+            <p className="text-3xl font-bold leading-snug text-foreground text-balance">
+              {recomendacionActualReal.mensaje_whatsapp}
+            </p>
             <button
               type="button"
-              onClick={() => hablar(recomendacion)}
+              onClick={() => hablar(recomendacionActualReal.mensaje_whatsapp)}
               className="flex h-32 w-32 flex-col items-center justify-center gap-1 rounded-full bg-accent text-accent-foreground shadow-lg transition-transform active:scale-95"
               aria-label="Escuchar la recomendación en voz alta"
             >
@@ -60,29 +62,30 @@ export function AgricultorDashboard({ onLogout }: { onLogout: () => void }) {
         {active === "siembra" && (
           <div className="flex w-full max-w-md flex-col gap-5">
             <h2 className="text-center text-3xl font-bold text-foreground">Siembra recomendada</h2>
-            {cultivos.map((c) => {
-              const sembrar = c.accion === "sembrar"
-              return (
-                <div key={c.id} className="flex items-center gap-5 rounded-3xl bg-card p-6 shadow-sm">
-                  <span
-                    className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full text-white"
-                    style={{ backgroundColor: sembrar ? "var(--nivel-verde)" : "var(--nivel-naranja)" }}
-                  >
-                    {sembrar ? <Check size={40} /> : <Clock size={40} />}
-                  </span>
-                  <div>
-                    <p className="text-2xl font-bold text-foreground">{c.nombre}</p>
-                    <p
-                      className="text-xl font-bold"
-                      style={{ color: sembrar ? "var(--nivel-verde)" : "var(--nivel-naranja)" }}
-                    >
-                      {sembrar ? "SEMBRAR" : "ESPERAR"}
-                    </p>
-                    <p className="mt-1 text-lg text-muted-foreground leading-relaxed">{c.nota}</p>
-                  </div>
-                </div>
-              )
-            })}
+            <div className="flex items-center gap-5 rounded-3xl bg-card p-6 shadow-sm">
+              <span
+                className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full text-white"
+                style={{ backgroundColor: "var(--nivel-naranja)" }}
+              >
+                <Sprout size={40} />
+              </span>
+              <div>
+                <p className="text-2xl font-bold text-foreground">{nombreCultivo(recomendacionActualReal.cultivo_prioritario)}</p>
+                <p className="text-xl font-bold uppercase" style={{ color: "var(--nivel-naranja)" }}>
+                  {accionLabel(recomendacionActualReal.accion)}
+                </p>
+                <p className="mt-1 text-lg text-muted-foreground leading-relaxed">{recomendacionActualReal.razon}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 rounded-3xl bg-card p-6 shadow-sm">
+              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
+                <Sun size={26} />
+              </span>
+              <div>
+                <p className="text-base font-semibold text-muted-foreground">Ventana de siembra</p>
+                <p className="text-xl font-bold text-foreground">{ventanaSiembra(recomendacionActualReal.cultivo_prioritario)}</p>
+              </div>
+            </div>
           </div>
         )}
 
