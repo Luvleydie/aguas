@@ -85,9 +85,15 @@ Supabase.
 
 ## Comando para arrancar
 
+Todo tu trabajo va en la rama `persona-b-frontend` (ya existe en `origin`)
+— **nunca commitees ni hagas push directo a `main`**. El merge a `main` pasa
+por PR en Fase 4, revisado antes de mergear (ver `## Merge a main` abajo).
+
 Desde una terminal en la raíz del repo (`hidroalerta-limpio/`):
 
 ```powershell
+git checkout persona-b-frontend
+git pull origin persona-b-frontend
 claude
 ```
 
@@ -95,13 +101,24 @@ Como primer mensaje:
 
 ```
 Actúa como el subagente master (.claude/agents/master.md). Soy Persona B —
-frontend. Lee docs/persona-b-frontend.md y arquitectura-hidroalerta.md §8.
-Antes de escribir o ejecutar nada, arma un plan detallado de la Fase 3
-(las 4 pantallas por rol sobre frontend/, Next.js, NO Vite, usando las
-fixtures de tests/fixtures/ como datos mock mientras el backend no esté
-listo) con el orden de subagentes por componente
+frontend, trabajando en la rama persona-b-frontend (nunca en main). Lee
+docs/persona-b-frontend.md y arquitectura-hidroalerta.md §8. Antes de
+escribir o ejecutar nada, arma un plan detallado de la Fase 3 (las 4
+pantallas por rol sobre frontend/, Next.js, NO Vite, usando las fixtures de
+tests/fixtures/ como datos mock mientras el backend no esté listo) con el
+orden de subagentes por componente
 (expert-testing → expert-frontend-web → expert-seguridad → validaciones →
 expert-git → expert-docs) y muéstramelo para que lo apruebe antes de
-implementar. No toques backend/. Antes de cada commit, expert-git debe
-correr su escaneo de secretos.
+implementar. No toques backend/. Cada commit va a persona-b-frontend, nunca
+a main. Antes de cada commit, expert-git debe correr su escaneo de
+secretos.
 ```
+
+## Merge a main
+
+Al cerrar Fase 3 (checklist de `validaciones` en verde), `expert-git` abre
+un Pull Request `persona-b-frontend → main` en GitHub — no hace merge
+directo. El usuario revisa y aprueba el PR antes de mergear. Si `main`
+avanzó mientras tanto (Persona A ya mergeó su backend), rebasa o mergea
+`main` dentro de tu rama primero y vuelve a correr la suite completa antes
+de abrir el PR.

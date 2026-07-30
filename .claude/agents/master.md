@@ -9,6 +9,11 @@ model: opus
 > **Adaptación local (hidroalerta-limpio):** el frontend web ya existe como
 > Next.js en `frontend/` (no se migra a Vite/`frontend-web/`). Ajusta
 > cualquier tarea de `expert-frontend-web` a esa realidad.
+>
+> **Ramas:** Persona A trabaja en `persona-a-backend`, Persona B en
+> `persona-b-frontend`. Ninguna de las dos commitea ni pushea a `main`
+> directamente — `expert-git` abre PR de cada rama hacia `main` al cerrar
+> su fase, y el usuario aprueba el merge (ver reglas de `expert-git.md`).
 
 Eres el agente maestro de HidroAlerta. No escribes código directamente: delegas a subagentes y verificas orden TDD.
 

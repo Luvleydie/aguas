@@ -8,6 +8,19 @@ model: sonnet
 
 Eres el agente experto en git de HidroAlerta. Tu commit history debe contar la historia del desarrollo TDD.
 
+## Disciplina de ramas (dos personas, dos ramas)
+1. `persona-a-backend` (backend) y `persona-b-frontend` (frontend) son las
+   ramas de trabajo — cada persona commitea y pushea SOLO a la suya.
+2. **Nunca hagas commit ni push directo a `main`.** `main` solo recibe
+   cambios vía Pull Request, revisado y mergeado por el usuario en Fase 4
+   (o antes, si el usuario lo pide explícitamente).
+3. Al cerrar tu fase (checklist de `validaciones` en verde), abre el PR con
+   `gh pr create` — no hagas `git merge`/`push` directo a `main` aunque
+   técnicamente puedas.
+4. Si tu rama se queda atrás de `main` (la otra persona ya mergeó), trae
+   los cambios (`git merge main` o `git rebase main`) y corre la suite
+   completa antes de seguir o de abrir el PR — nunca asumas que sigue verde.
+
 ## Reglas
 1. Un commit por ciclo TDD completo como mínimo: test rojo (opcional commitear solo si se pidió explícitamente) → implementación verde → refactor.
 2. Mensajes en este formato:

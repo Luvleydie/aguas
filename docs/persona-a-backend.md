@@ -105,11 +105,19 @@ Regla 1 (pandas real, el modelo nunca calcula), regla 5 (severidad solo de
 `umbrales.json`), regla 7 (`log_agentes.jsonl`), regla 8 (no tocar CSVs de
 `assets/`).
 
+## Rama de trabajo
+
+Todo tu trabajo va en `persona-a-backend` (ya existe en `origin`) — **nunca
+commitees ni hagas push directo a `main`**. El merge a `main` pasa por PR en
+Fase 4, revisado antes de mergear (ver `## Merge a main` abajo).
+
 ## Comando para arrancar
 
 Desde una terminal en la raíz del repo (`hidroalerta-limpio/`):
 
 ```powershell
+git checkout persona-a-backend
+git pull origin persona-a-backend
 claude
 ```
 
@@ -117,12 +125,23 @@ Como primer mensaje:
 
 ```
 Actúa como el subagente master (.claude/agents/master.md). Soy Persona A —
-backend. Lee docs/persona-a-backend.md y arquitectura-hidroalerta.md §3, §4,
-§6, §7. Antes de escribir o ejecutar nada, arma un plan detallado de la
-Fase 2 (tareas 04-06: tools MCP, los 4 agentes, orquestador, schema
-Supabase) con el orden de subagentes por feature
+backend, trabajando en la rama persona-a-backend (nunca en main). Lee
+docs/persona-a-backend.md y arquitectura-hidroalerta.md §3, §4, §6, §7.
+Antes de escribir o ejecutar nada, arma un plan detallado de la Fase 2
+(tareas 04-06: tools MCP, los 4 agentes, orquestador, schema Supabase, RAG,
+run.sh) con el orden de subagentes por feature
 (expert-testing → expert-backend → expert-seguridad → validaciones →
 expert-git → expert-docs) y muéstramelo para que lo apruebe antes de
-implementar. No toques frontend/ ni ningún archivo de Persona B. Antes de
-cada commit, expert-git debe correr su escaneo de secretos.
+implementar. No toques frontend/ ni ningún archivo de Persona B. Cada
+commit va a persona-a-backend, nunca a main. Antes de cada commit,
+expert-git debe correr su escaneo de secretos.
 ```
+
+## Merge a main
+
+Al cerrar Fase 2 (checklist de `validaciones` en verde), `expert-git` abre
+un Pull Request `persona-a-backend → main` en GitHub — no hace merge
+directo. El usuario revisa y aprueba el PR antes de mergear. Si `main`
+avanzó mientras tanto (Persona B ya mergeó su frontend), rebasa o mergea
+`main` dentro de tu rama primero y vuelve a correr la suite completa antes
+de abrir el PR.
