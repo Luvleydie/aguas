@@ -30,4 +30,14 @@ describe("AgricultorDashboard", () => {
     await user.click(screen.getByRole("button", { name: "Historial" }))
     expect(screen.getAllByLabelText(/^Semana \d+:/)).toHaveLength(historialSemanas.length)
   })
+
+  it("Historial: la fila de puntos puede envolver en pantallas angostas (sin overflow horizontal)", async () => {
+    const user = userEvent.setup()
+    render(<AgricultorDashboard onLogout={() => {}} />)
+
+    await user.click(screen.getByRole("button", { name: "Historial" }))
+    const primerPunto = screen.getAllByLabelText(/^Semana \d+:/)[0]
+    const fila = primerPunto.parentElement?.parentElement
+    expect(fila).toHaveClass("flex-wrap")
+  })
 })

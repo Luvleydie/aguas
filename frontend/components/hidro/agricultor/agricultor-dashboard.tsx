@@ -92,7 +92,7 @@ export function AgricultorDashboard({ onLogout }: { onLogout: () => void }) {
         {active === "historial" && (
           <div className="flex w-full max-w-md flex-col items-center gap-8 text-center">
             <h2 className="text-3xl font-bold text-foreground">Últimas 4 semanas</h2>
-            <div className="flex items-end justify-center gap-5">
+            <div className="flex flex-wrap items-end justify-center gap-5">
               {historialSemanas.map((nivel, i) => (
                 <div key={i} className="flex flex-col items-center gap-2">
                   <span
