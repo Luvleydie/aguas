@@ -1,3 +1,34 @@
+import type { Nivel } from "@/lib/hidro-data"
+
+export type Severidad = "info" | "warn" | "alerta" | "critico"
+
+/** Subconjunto de Hallazgo (backend/contracts.py) que consume la UI. */
+export interface Hallazgo {
+  id: string
+  metrica: string
+  valor: number
+  unidad: string
+  severidad: Severidad
+  contexto: string
+  sparkline: string
+}
+
+/**
+ * Forma real de un boletín ya publicado/consultable: el contrato Boletin del
+ * Narrador (semana, nivel_alerta_global -> nivel, markdown) más los campos
+ * que agrega la fila de Supabase (`fecha`, `publicado`) y los hallazgos del
+ * Estadista para el panel de datos crudos.
+ */
+export interface BoletinReal {
+  semana: number
+  fecha: string
+  publicado: boolean
+  nivel: Nivel
+  markdown: string
+  recomendacion: string
+  hallazgos: Hallazgo[]
+}
+
 export interface SeccionesBoletin {
   presas: string
   precipitacion: string
