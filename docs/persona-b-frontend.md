@@ -1,8 +1,9 @@
 # Brief — Persona B: Frontend (Next.js)
 
-> Preparación para la fase posterior al checkpoint de `CLAUDE.md`. **No
-> implementes nada de esto hasta que el equipo apruebe explícitamente salir
-> de la Fase 1 · Setup.**
+> **Checkpoint de Fase 1 aprobado (2026-07-30, ver `CLAUDE.md`).** Ya puedes
+> implementar siguiendo TDD estricto — arranca armando el plan de la fase
+> (ver "Comando para arrancar" abajo) y preséntalo antes de escribir código,
+> pero el gate de arquitectura ya no bloquea.
 
 ## Alcance real (corregido)
 
