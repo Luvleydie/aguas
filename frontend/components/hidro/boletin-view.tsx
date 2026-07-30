@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { ChevronDown, Droplet, CloudRain, Thermometer, TriangleAlert, CheckCircle2, Send } from "lucide-react"
-import type { Boletin } from "@/lib/hidro-data"
+import { type BoletinReal, parseSeccionesBoletin } from "@/lib/boletin-adapter"
 import { Semaforo } from "@/components/hidro/semaforo"
 import { NivelBadge } from "@/components/hidro/nivel-badge"
 import { Button } from "@/components/ui/button"
@@ -26,7 +26,7 @@ function RichText({ text, className }: { text: string; className?: string }) {
   )
 }
 
-const secciones = [
+const SECCIONES_UI = [
   { key: "presas", titulo: "Estado de presas", icon: Droplet },
   { key: "precipitacion", titulo: "Precipitación", icon: CloudRain },
   { key: "temperatura", titulo: "Temperatura", icon: Thermometer },
@@ -37,11 +37,12 @@ export function BoletinView({
   boletin,
   showPublish = false,
 }: {
-  boletin: Boletin
+  boletin: BoletinReal
   showPublish?: boolean
 }) {
   const [rawOpen, setRawOpen] = useState(false)
   const [publicado, setPublicado] = useState(boletin.publicado)
+  const secciones = parseSeccionesBoletin(boletin.markdown)
 
   return (
     <div className="space-y-6">
@@ -59,7 +60,7 @@ export function BoletinView({
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
-        {secciones.map((s) => {
+        {SECCIONES_UI.map((s) => {
           const Icon = s.icon
           return (
             <section key={s.key} className="rounded-3xl bg-card p-6 shadow-sm">
@@ -69,7 +70,7 @@ export function BoletinView({
                 </span>
                 <h3 className="text-xl font-bold text-foreground">{s.titulo}</h3>
               </div>
-              <RichText text={boletin.secciones[s.key]} />
+              <RichText text={secciones[s.key]} />
             </section>
           )
         })}
@@ -88,10 +89,17 @@ export function BoletinView({
         {rawOpen && (
           <div className="border-t border-border px-6 pb-6 pt-2">
             <dl className="divide-y divide-border">
-              {boletin.datosCrudos.map((d) => (
-                <div key={d.indicador} className="flex items-center justify-between py-3">
-                  <dt className="text-base text-muted-foreground">{d.indicador}</dt>
-                  <dd className="text-base font-semibold text-foreground">{d.valor}</dd>
+              {boletin.hallazgos.map((h) => (
+                <div key={h.id} className="flex items-center justify-between gap-4 py-3">
+                  <dt className="text-base text-muted-foreground">{h.contexto}</dt>
+                  <dd className="flex items-center gap-3 text-base font-semibold text-foreground">
+                    <span aria-hidden className="font-mono text-muted-foreground">
+                      {h.sparkline}
+                    </span>
+                    <span>
+                      {h.valor} {h.unidad}
+                    </span>
+                  </dd>
                 </div>
               ))}
             </dl>

@@ -7,7 +7,8 @@ import { Semaforo } from "@/components/hidro/semaforo"
 import { BoletinView } from "@/components/hidro/boletin-view"
 import { TrendChart } from "@/components/hidro/trend-chart"
 import { Button } from "@/components/ui/button"
-import { boletinActual, presas } from "@/lib/hidro-data"
+import { presas } from "@/lib/hidro-data"
+import { boletinActualReal } from "@/lib/boletin-real-mock"
 
 const tabs: TabItem[] = [
   { id: "inicio", label: "Inicio" },
@@ -24,9 +25,9 @@ export function AyuntamientoDashboard({ onLogout }: { onLogout: () => void }) {
       {active === "inicio" && (
         <div className="flex flex-col items-center gap-8 rounded-3xl bg-card p-8 text-center shadow-sm">
           <div>
-            <p className="text-lg font-semibold text-muted-foreground">Nivel de alerta · Semana {boletinActual.semana}</p>
+            <p className="text-lg font-semibold text-muted-foreground">Nivel de alerta · Semana {boletinActualReal.semana}</p>
           </div>
-          <Semaforo nivel={boletinActual.nivel} size="xl" showScale showLabel={false} />
+          <Semaforo nivel={boletinActualReal.nivel} size="xl" showScale showLabel={false} />
           <p className="max-w-xl text-2xl font-semibold leading-relaxed text-foreground text-balance">
             Restricción parcial del riego agrícola. Priorizar el consumo humano y reforzar el ahorro de agua.
           </p>
@@ -42,7 +43,7 @@ export function AyuntamientoDashboard({ onLogout }: { onLogout: () => void }) {
         </div>
       )}
 
-      {active === "boletin" && <BoletinView boletin={boletinActual} />}
+      {active === "boletin" && <BoletinView boletin={boletinActualReal} />}
 
       {active === "tendencias" && (
         <div className="rounded-3xl bg-card p-6 shadow-sm sm:p-8">

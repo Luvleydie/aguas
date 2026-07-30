@@ -1,6 +1,6 @@
 import { BoletinView } from "@/components/hidro/boletin-view"
-import { boletinActual } from "@/lib/hidro-data"
+import { boletinActualReal } from "@/lib/boletin-real-mock"
 
 export function GobiernoBoletin() {
-  return <BoletinView boletin={boletinActual} showPublish />
+  return <BoletinView boletin={boletinActualReal} showPublish />
 }
