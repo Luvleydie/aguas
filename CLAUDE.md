@@ -18,8 +18,13 @@ Este repositorio está detenido deliberadamente en **1 · Setup**:
 - pruebas de contratos verdes y pruebas funcionales en rojo por
   `NotImplementedError`.
 
-No implementes el pipeline, las herramientas MCP ni el cálculo de severidad
-hasta recibir aprobación explícita para continuar después del checkpoint.
+**Checkpoint aprobado (2026-07-30):** el usuario dio luz verde explícita para
+salir de Fase 1 y arrancar Fase 2 (backend) y Fase 3 (frontend). `master` y
+los subagentes de implementación (`expert-backend`, `expert-frontend-web`,
+`expert-bd`, etc.) ya pueden implementar pipeline, tools MCP, severidad y
+pantallas — siguiendo TDD estricto y el reparto de `docs/persona-a-backend.md`
+/ `docs/persona-b-frontend.md`, cada quien en su rama
+(`persona-a-backend` / `persona-b-frontend`), nunca directo en `main`.
 
 ## Reglas no negociables
 
