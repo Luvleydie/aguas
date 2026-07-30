@@ -1,0 +1,9 @@
+{
+  "agente": "agronomo",
+  "semana": 42,
+  "cultivo_prioritario": "frijol",
+  "accion": "retrasar_siembra",
+  "razon": "nivel de presa 12% bajo la media, precipitación insuficiente para la etapa crítica",
+  "mensaje_whatsapp": "🌾 Alerta: nivel bajo en las presas. Se recomienda posponer la siembra 2 semanas.",
+  "severidad": "alerta"
+}

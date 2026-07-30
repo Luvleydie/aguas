@@ -1,0 +1,261 @@
+semana_inicio,estacion,precipitacion_mm,dias_con_lluvia
+2024-01-01,Durango Centro,0.0,0
+2024-01-08,Durango Centro,3.2,1
+2024-01-15,Durango Centro,0.0,0
+2024-01-22,Durango Centro,2.4,1
+2024-01-29,Durango Centro,0.0,1
+2024-02-05,Durango Centro,0.0,0
+2024-02-12,Durango Centro,10.0,1
+2024-02-19,Durango Centro,3.2,0
+2024-02-26,Durango Centro,4.9,1
+2024-03-04,Durango Centro,0.0,0
+2024-03-11,Durango Centro,2.9,0
+2024-03-18,Durango Centro,0.0,0
+2024-03-25,Durango Centro,0.0,0
+2024-04-01,Durango Centro,0.0,0
+2024-04-08,Durango Centro,0.8,0
+2024-04-15,Durango Centro,0.0,0
+2024-04-22,Durango Centro,0.0,1
+2024-04-29,Durango Centro,6.7,0
+2024-05-06,Durango Centro,0.0,0
+2024-05-13,Durango Centro,0.7,1
+2024-05-20,Durango Centro,0.0,0
+2024-05-27,Durango Centro,1.2,0
+2024-06-03,Durango Centro,3.1,0
+2024-06-10,Durango Centro,5.7,0
+2024-06-17,Durango Centro,1.1,1
+2024-06-24,Durango Centro,0.0,0
+2024-07-01,Durango Centro,26.9,2
+2024-07-08,Durango Centro,29.5,4
+2024-07-15,Durango Centro,26.4,2
+2024-07-22,Durango Centro,24.1,2
+2024-07-29,Durango Centro,21.2,2
+2024-08-05,Durango Centro,65.1,7
+2024-08-12,Durango Centro,47.3,6
+2024-08-19,Durango Centro,50.2,7
+2024-08-26,Durango Centro,48.1,5
+2024-09-02,Durango Centro,46.5,6
+2024-09-09,Durango Centro,47.6,6
+2024-09-16,Durango Centro,43.2,5
+2024-09-23,Durango Centro,49.8,6
+2024-09-30,Durango Centro,47.5,5
+2024-10-07,Durango Centro,23.1,2
+2024-10-14,Durango Centro,25.1,4
+2024-10-21,Durango Centro,28.3,3
+2024-10-28,Durango Centro,26.7,4
+2024-11-04,Durango Centro,0.0,1
+2024-11-11,Durango Centro,2.7,1
+2024-11-18,Durango Centro,0.0,1
+2024-11-25,Durango Centro,9.9,1
+2024-12-02,Durango Centro,0.0,1
+2024-12-09,Durango Centro,0.0,0
+2024-12-16,Durango Centro,2.0,1
+2024-12-23,Durango Centro,0.0,0
+2024-01-01,El Salto,0.0,0
+2024-01-08,El Salto,0.0,0
+2024-01-15,El Salto,0.0,0
+2024-01-22,El Salto,1.8,0
+2024-01-29,El Salto,5.4,0
+2024-02-05,El Salto,5.1,0
+2024-02-12,El Salto,5.2,1
+2024-02-19,El Salto,3.2,0
+2024-02-26,El Salto,0.0,0
+2024-03-04,El Salto,3.9,0
+2024-03-11,El Salto,5.8,2
+2024-03-18,El Salto,0.0,0
+2024-03-25,El Salto,10.6,1
+2024-04-01,El Salto,6.9,1
+2024-04-08,El Salto,5.0,1
+2024-04-15,El Salto,0.0,0
+2024-04-22,El Salto,4.4,0
+2024-04-29,El Salto,3.6,1
+2024-05-06,El Salto,10.4,2
+2024-05-13,El Salto,11.9,1
+2024-05-20,El Salto,14.1,3
+2024-05-27,El Salto,12.8,1
+2024-06-03,El Salto,10.5,1
+2024-06-10,El Salto,10.4,2
+2024-06-17,El Salto,12.4,3
+2024-06-24,El Salto,15.0,3
+2024-07-01,El Salto,87.5,7
+2024-07-08,El Salto,86.6,7
+2024-07-15,El Salto,92.9,7
+2024-07-22,El Salto,94.6,7
+2024-07-29,El Salto,85.9,7
+2024-08-05,El Salto,168.0,7
+2024-08-12,El Salto,159.9,7
+2024-08-19,El Salto,158.5,7
+2024-08-26,El Salto,164.3,7
+2024-09-02,El Salto,168.0,7
+2024-09-09,El Salto,168.8,7
+2024-09-16,El Salto,159.7,7
+2024-09-23,El Salto,166.3,7
+2024-09-30,El Salto,166.2,7
+2024-10-07,El Salto,92.0,7
+2024-10-14,El Salto,83.4,7
+2024-10-21,El Salto,92.2,7
+2024-10-28,El Salto,87.3,7
+2024-11-04,El Salto,12.5,1
+2024-11-11,El Salto,22.4,4
+2024-11-18,El Salto,21.6,3
+2024-11-25,El Salto,11.4,0
+2024-12-02,El Salto,0.0,0
+2024-12-09,El Salto,0.0,1
+2024-12-16,El Salto,0.0,1
+2024-12-23,El Salto,0.0,0
+2024-01-01,Nombre de Dios,2.6,1
+2024-01-08,Nombre de Dios,0.1,0
+2024-01-15,Nombre de Dios,0.0,1
+2024-01-22,Nombre de Dios,0.0,0
+2024-01-29,Nombre de Dios,0.0,0
+2024-02-05,Nombre de Dios,0.1,0
+2024-02-12,Nombre de Dios,0.0,0
+2024-02-19,Nombre de Dios,3.1,0
+2024-02-26,Nombre de Dios,5.7,1
+2024-03-04,Nombre de Dios,6.7,1
+2024-03-11,Nombre de Dios,0.7,1
+2024-03-18,Nombre de Dios,4.8,1
+2024-03-25,Nombre de Dios,3.0,0
+2024-04-01,Nombre de Dios,0.0,0
+2024-04-08,Nombre de Dios,0.0,0
+2024-04-15,Nombre de Dios,1.0,1
+2024-04-22,Nombre de Dios,8.2,1
+2024-04-29,Nombre de Dios,0.0,0
+2024-05-06,Nombre de Dios,11.8,1
+2024-05-13,Nombre de Dios,3.2,0
+2024-05-20,Nombre de Dios,4.7,1
+2024-05-27,Nombre de Dios,0.0,0
+2024-06-03,Nombre de Dios,0.8,0
+2024-06-10,Nombre de Dios,0.0,0
+2024-06-17,Nombre de Dios,4.7,1
+2024-06-24,Nombre de Dios,0.0,0
+2024-07-01,Nombre de Dios,25.6,4
+2024-07-08,Nombre de Dios,19.6,3
+2024-07-15,Nombre de Dios,22.1,2
+2024-07-22,Nombre de Dios,19.4,2
+2024-07-29,Nombre de Dios,22.7,2
+2024-08-05,Nombre de Dios,47.2,6
+2024-08-12,Nombre de Dios,49.5,7
+2024-08-19,Nombre de Dios,38.0,6
+2024-08-26,Nombre de Dios,42.2,5
+2024-09-02,Nombre de Dios,34.2,5
+2024-09-09,Nombre de Dios,37.4,5
+2024-09-16,Nombre de Dios,47.0,7
+2024-09-23,Nombre de Dios,42.5,4
+2024-09-30,Nombre de Dios,33.4,5
+2024-10-07,Nombre de Dios,22.1,3
+2024-10-14,Nombre de Dios,16.6,2
+2024-10-21,Nombre de Dios,18.4,3
+2024-10-28,Nombre de Dios,14.4,2
+2024-11-04,Nombre de Dios,2.1,1
+2024-11-11,Nombre de Dios,0.0,0
+2024-11-18,Nombre de Dios,3.1,0
+2024-11-25,Nombre de Dios,0.0,0
+2024-12-02,Nombre de Dios,8.9,1
+2024-12-09,Nombre de Dios,6.0,0
+2024-12-16,Nombre de Dios,0.0,1
+2024-12-23,Nombre de Dios,0.3,0
+2024-01-01,Cuencamé,0.0,1
+2024-01-08,Cuencamé,0.0,0
+2024-01-15,Cuencamé,9.0,1
+2024-01-22,Cuencamé,6.9,2
+2024-01-29,Cuencamé,0.0,0
+2024-02-05,Cuencamé,1.6,0
+2024-02-12,Cuencamé,1.9,1
+2024-02-19,Cuencamé,0.0,1
+2024-02-26,Cuencamé,0.0,0
+2024-03-04,Cuencamé,1.1,1
+2024-03-11,Cuencamé,0.0,0
+2024-03-18,Cuencamé,3.4,1
+2024-03-25,Cuencamé,0.7,0
+2024-04-01,Cuencamé,0.0,0
+2024-04-08,Cuencamé,0.0,0
+2024-04-15,Cuencamé,0.0,0
+2024-04-22,Cuencamé,5.8,0
+2024-04-29,Cuencamé,1.7,0
+2024-05-06,Cuencamé,18.4,2
+2024-05-13,Cuencamé,0.0,1
+2024-05-20,Cuencamé,1.2,0
+2024-05-27,Cuencamé,3.2,1
+2024-06-03,Cuencamé,3.2,0
+2024-06-10,Cuencamé,0.0,1
+2024-06-17,Cuencamé,7.6,1
+2024-06-24,Cuencamé,2.5,0
+2024-07-01,Cuencamé,10.9,1
+2024-07-08,Cuencamé,12.9,1
+2024-07-15,Cuencamé,12.1,2
+2024-07-22,Cuencamé,5.3,1
+2024-07-29,Cuencamé,3.5,1
+2024-08-05,Cuencamé,21.6,3
+2024-08-12,Cuencamé,16.4,2
+2024-08-19,Cuencamé,15.4,1
+2024-08-26,Cuencamé,17.9,2
+2024-09-02,Cuencamé,14.8,2
+2024-09-09,Cuencamé,18.5,3
+2024-09-16,Cuencamé,16.0,2
+2024-09-23,Cuencamé,21.3,3
+2024-09-30,Cuencamé,14.3,2
+2024-10-07,Cuencamé,16.4,3
+2024-10-14,Cuencamé,14.2,2
+2024-10-21,Cuencamé,7.4,1
+2024-10-28,Cuencamé,7.6,1
+2024-11-04,Cuencamé,0.0,0
+2024-11-11,Cuencamé,1.0,1
+2024-11-18,Cuencamé,0.0,0
+2024-11-25,Cuencamé,0.0,1
+2024-12-02,Cuencamé,0.0,0
+2024-12-09,Cuencamé,0.0,1
+2024-12-16,Cuencamé,2.3,0
+2024-12-23,Cuencamé,2.7,0
+2024-01-01,Guadalupe Victoria,10.6,1
+2024-01-08,Guadalupe Victoria,0.0,0
+2024-01-15,Guadalupe Victoria,0.5,1
+2024-01-22,Guadalupe Victoria,0.0,0
+2024-01-29,Guadalupe Victoria,0.0,0
+2024-02-05,Guadalupe Victoria,0.0,0
+2024-02-12,Guadalupe Victoria,0.0,0
+2024-02-19,Guadalupe Victoria,0.0,0
+2024-02-26,Guadalupe Victoria,0.0,0
+2024-03-04,Guadalupe Victoria,0.6,1
+2024-03-11,Guadalupe Victoria,0.7,0
+2024-03-18,Guadalupe Victoria,0.0,0
+2024-03-25,Guadalupe Victoria,5.7,0
+2024-04-01,Guadalupe Victoria,1.3,0
+2024-04-08,Guadalupe Victoria,0.0,0
+2024-04-15,Guadalupe Victoria,1.0,0
+2024-04-22,Guadalupe Victoria,0.0,0
+2024-04-29,Guadalupe Victoria,0.0,0
+2024-05-06,Guadalupe Victoria,7.6,1
+2024-05-13,Guadalupe Victoria,0.0,0
+2024-05-20,Guadalupe Victoria,0.0,0
+2024-05-27,Guadalupe Victoria,2.7,0
+2024-06-03,Guadalupe Victoria,1.6,0
+2024-06-10,Guadalupe Victoria,0.0,1
+2024-06-17,Guadalupe Victoria,4.2,0
+2024-06-24,Guadalupe Victoria,0.0,0
+2024-07-01,Guadalupe Victoria,11.8,2
+2024-07-08,Guadalupe Victoria,14.6,2
+2024-07-15,Guadalupe Victoria,21.8,4
+2024-07-22,Guadalupe Victoria,14.9,2
+2024-07-29,Guadalupe Victoria,16.1,2
+2024-08-05,Guadalupe Victoria,20.5,2
+2024-08-12,Guadalupe Victoria,27.7,4
+2024-08-19,Guadalupe Victoria,29.0,4
+2024-08-26,Guadalupe Victoria,31.6,5
+2024-09-02,Guadalupe Victoria,29.1,3
+2024-09-09,Guadalupe Victoria,30.4,4
+2024-09-16,Guadalupe Victoria,31.6,4
+2024-09-23,Guadalupe Victoria,26.8,3
+2024-09-30,Guadalupe Victoria,24.2,3
+2024-10-07,Guadalupe Victoria,11.9,1
+2024-10-14,Guadalupe Victoria,19.1,2
+2024-10-21,Guadalupe Victoria,15.1,1
+2024-10-28,Guadalupe Victoria,17.8,2
+2024-11-04,Guadalupe Victoria,1.1,0
+2024-11-11,Guadalupe Victoria,0.0,0
+2024-11-18,Guadalupe Victoria,0.0,0
+2024-11-25,Guadalupe Victoria,0.0,0
+2024-12-02,Guadalupe Victoria,0.0,0
+2024-12-09,Guadalupe Victoria,0.0,1
+2024-12-16,Guadalupe Victoria,0.0,0
+2024-12-23,Guadalupe Victoria,4.4,0

@@ -1,0 +1,37 @@
+{
+  "cultivos": [
+    {
+      "cultivo": "Maíz",
+      "mes_inicio_siembra": 4,
+      "mes_fin_siembra": 6,
+      "etapa_critica_semana_desde": 8,
+      "etapa_critica_semana_desde_siembra": 10,
+      "necesidad_agua_mm_semana_etapa_normal": 35,
+      "necesidad_agua_mm_semana_etapa_critica": 55,
+      "tolerancia_sequia": "media",
+      "notas": "Sensible a heladas tempranas en etapa de llenado de grano."
+    },
+    {
+      "cultivo": "Frijol",
+      "mes_inicio_siembra": 6,
+      "mes_fin_siembra": 8,
+      "etapa_critica_semana_desde": 5,
+      "etapa_critica_semana_desde_siembra": 7,
+      "necesidad_agua_mm_semana_etapa_normal": 25,
+      "necesidad_agua_mm_semana_etapa_critica": 45,
+      "tolerancia_sequia": "baja",
+      "notas": "Muy sensible al estrés hídrico durante la floración."
+    },
+    {
+      "cultivo": "Alfalfa",
+      "mes_inicio_siembra": 9,
+      "mes_fin_siembra": 11,
+      "etapa_critica_semana_desde": 4,
+      "etapa_critica_semana_desde_siembra": 8,
+      "necesidad_agua_mm_semana_etapa_normal": 40,
+      "necesidad_agua_mm_semana_etapa_critica": 60,
+      "tolerancia_sequia": "alta",
+      "notas": "Alta demanda hídrica anual pero sobrevive sequías por raíz profunda."
+    }
+  ]
+}

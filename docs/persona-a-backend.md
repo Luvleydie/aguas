@@ -1,0 +1,107 @@
+# Brief — Persona A: Backend completo
+
+> Preparación para la fase posterior al checkpoint de `CLAUDE.md`. **No
+> implementes nada de esto hasta que el equipo apruebe explícitamente salir
+> de la Fase 1 · Setup.**
+
+## Por qué esto es un solo bloque de trabajo (y no se reparte)
+
+`expert-backend` (`.claude/agents/expert-backend.md`) agrupa deliberadamente
+tools MCP + los 4 agentes (`ejecutar_*`) + orquestador + API + RAG en un solo
+subagente — porque el contrato entre esas piezas es interno y cambia junto
+(un cambio de firma en una tool obliga a tocar el agente que la llama en el
+mismo commit). Partirlo entre dos personas generaría handoffs constantes por
+el mismo archivo. Por eso **Fase 2 (backend) la lleva una sola persona**;
+Persona B empieza su parte (frontend) en paralelo, contra fixtures/mocks,
+sin esperar a que el backend esté terminado.
+
+## Objetivo
+
+Todo lo que no es interfaz de usuario: severidad, tools MCP, los 4 agentes,
+orquestador, Supabase (con `expert-bd`), API FastAPI, RAG.
+
+## Contexto que ya existe
+
+- `backend/contracts.py`: contratos Pydantic v2 de los 4 agentes — es la
+  interfaz que Persona B también consume; no lo cambies sin avisarle.
+- `backend/severity.py`, `backend/pipeline.py`, `backend/agents/*.py`:
+  firmas y `SYSTEM_PROMPT` ya definidos, cuerpo en `NotImplementedError`
+  (rojo esperado).
+- `assets/umbrales.json`, `assets/cultivos_valle_guadiana.csv`: únicas
+  fuentes de verdad para severidad y calendario de cultivos.
+- `assets/starter.py`: firmas oficiales de las 5 tools MCP — úsalas tal
+  cual, no inventes variantes.
+- `backend/data/`: tu copia de trabajo de los CSV/JSON (assets/ es
+  solo lectura, regla 8).
+
+## Alcance por fase (roadmap completo en `arquitectura-hidroalerta.md` §12)
+
+**Fase 2 · Backend con TDD**
+1. `backend/severity.py` — `clasificar_severidad` contra `umbrales.json`.
+2. Tools MCP reales (pandas) con las firmas EXACTAS de `assets/starter.py`
+   (`tool_describe`, `tool_filter_by_date`, `tool_calc_stats`,
+   `tool_compare_periods`, `tool_plot_ascii`) — cobertura ≥90%.
+3. Los 4 agentes en `backend/agents/*.py` (`ejecutar_explorador`,
+   `ejecutar_estadista`, `ejecutar_narrador`, `ejecutar_agronomo`), usando
+   sus `SYSTEM_PROMPT` ya escritos y `AGENT_SCHEMAS` de `contracts.py`.
+4. `backend/pipeline.py` — orquestador: Explorador → Estadista →
+   {Narrador, Agrónomo} (estos dos en paralelo, ambos parten de los mismos
+   `hallazgos`). Registra un evento por agente en `log_agentes.jsonl`
+   (regla 7) y escribe `BOLETIN_SEMANA_{n}.md`.
+5. API FastAPI + JWT validado contra Supabase Auth + RLS + sanitización de
+   inputs (con `expert-seguridad`, en esta misma fase, no al final).
+6. Schema Supabase (`usuarios`, `boletines`, `agent_logs`,
+   `acciones_ayuntamiento`, `alertas_enviadas`) con `expert-bd`. Ya hay un
+   punto de partida en `backend/db/migrations/0001_init_schema.sql` (enums,
+   tablas, FKs, trigger de opt-in WhatsApp, RLS básica) — corre la
+   metodología TDD de `expert-bd.md` sobre eso: escribe los tests de
+   insert/constraint/RLS por tabla antes de darla por "lista", no asumas
+   que el DDL ya es suficiente.
+
+**Fase 3 (tu parte)**
+- Políticas RLS finas por rol con `expert-bd` + `expert-seguridad`.
+- Dejar la API corriendo y documentada para que Persona B la consuma.
+
+**Fase 4 · Entrega (junto con Persona B)**
+- `validaciones` corre el checklist completo contra `boletin_referencia.md`.
+- `expert-docs` + `expert-git` cierran README y commit final.
+
+## Subagentes que usas (en este orden, por feature)
+
+`expert-testing` (rojo) → `expert-bd` (si toca schema) → `expert-backend`
+(verde) → `expert-seguridad` → `validaciones` → `expert-git` → `expert-docs`.
+Si algo falla: `expert-bugs` diagnostica y corrige — nunca tú a mano, y
+nunca editando el test para que pase.
+
+## Interfaz con Persona B
+
+Persona B no toca `backend/`. Le entregas la forma exacta de `Boletin` y
+`RecomendacionAgricola` (`backend/contracts.py`, ya fijo) y, en cuanto
+exista, la URL/contrato de cada endpoint FastAPI — avísale apenas un
+endpoint quede verde para que deje de mockearlo en el frontend.
+
+## Reglas no negociables que más te tocan
+
+Regla 1 (pandas real, el modelo nunca calcula), regla 5 (severidad solo de
+`umbrales.json`), regla 7 (`log_agentes.jsonl`), regla 8 (no tocar CSVs de
+`assets/`).
+
+## Comando para arrancar
+
+Desde una terminal en la raíz del repo (`hidroalerta-limpio/`):
+
+```powershell
+claude
+```
+
+Como primer mensaje:
+
+```
+Actúa como el subagente master (.claude/agents/master.md). Soy Persona A —
+backend. Lee docs/persona-a-backend.md y arquitectura-hidroalerta.md §3, §4,
+§6, §7. Arranca Fase 2, tarea 04 (tools MCP) siguiendo el orden
+expert-testing → expert-backend → expert-seguridad → validaciones →
+expert-git → expert-docs. No toques frontend/ ni ningún archivo de
+Persona B. Antes de cada commit, expert-git debe correr su escaneo de
+secretos.
+```

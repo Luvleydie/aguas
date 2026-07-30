@@ -5,7 +5,13 @@ import json
 import pytest
 from pydantic import ValidationError
 
-from backend.contracts import AGENT_SCHEMAS, Boletin, PlanAnalisis, ResultadoEstadista
+from backend.contracts import (
+    AGENT_SCHEMAS,
+    Boletin,
+    PlanAnalisis,
+    RecomendacionAgricola,
+    ResultadoEstadista,
+)
 
 
 @pytest.mark.parametrize(
@@ -14,6 +20,7 @@ from backend.contracts import AGENT_SCHEMAS, Boletin, PlanAnalisis, ResultadoEst
         ("plan_analisis.json", PlanAnalisis),
         ("hallazgos.json", ResultadoEstadista),
         ("boletin.json", Boletin),
+        ("recomendacion_agricola.json", RecomendacionAgricola),
     ],
 )
 def test_fixtures_cumplen_contratos(fixture_dir, fixture_name, model):
@@ -40,19 +47,20 @@ def test_ventana_rechaza_fechas_invertidas(load_fixture):
 def test_boletin_exige_las_cuatro_secciones(load_fixture):
     boletin = load_fixture("boletin.json")
     boletin["markdown"] = boletin["markdown"].replace(
-        "## Recomendación", "### Cierre"
+        "## 4 · Alerta y recomendación", "### Cierre"
     )
 
-    with pytest.raises(ValidationError, match="Recomendación"):
+    with pytest.raises(ValidationError, match="Alerta y recomendación"):
         Boletin.model_validate(boletin)
 
 
 def test_cada_agente_tiene_esquema_json_propio():
-    assert set(AGENT_SCHEMAS) == {"explorador", "estadista", "narrador"}
+    assert set(AGENT_SCHEMAS) == {"explorador", "estadista", "narrador", "agronomo"}
     assert {schema["title"] for schema in AGENT_SCHEMAS.values()} == {
         "PlanAnalisis",
         "ResultadoEstadista",
         "Boletin",
+        "RecomendacionAgricola",
     }
-    assert len({json.dumps(schema, sort_keys=True) for schema in AGENT_SCHEMAS.values()}) == 3
+    assert len({json.dumps(schema, sort_keys=True) for schema in AGENT_SCHEMAS.values()}) == 4
 
