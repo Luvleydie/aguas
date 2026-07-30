@@ -50,7 +50,7 @@ export function TrendChart({
             fontSize: 14,
             color: "var(--foreground)",
           }}
-          formatter={(v: number) => [`${v}%`, "Almacenamiento"]}
+          formatter={(v) => [`${v}%`, "Almacenamiento"]}
         />
         {references.map((r) => (
           <ReferenceLine
