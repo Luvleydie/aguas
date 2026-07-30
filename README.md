@@ -59,3 +59,20 @@ pnpm dev
 `persona-a-backend` (backend, Fase 2) o `persona-b-frontend` (frontend,
 Fase 3) — ver el brief correspondiente en `docs/` para el comando de
 arranque exacto.
+
+## Backend (Persona A)
+
+> `expert-docs` en `persona-a-backend` escribe únicamente dentro de esta
+> sección — un bullet por feature validada, con fecha/commit. No edites
+> `## Frontend (Persona B)` desde esta rama; así los dos PRs casi nunca
+> chocan en la misma línea al mergear.
+
+_Sin features implementadas todavía._
+
+## Frontend (Persona B)
+
+> `expert-docs` en `persona-b-frontend` escribe únicamente dentro de esta
+> sección — un bullet por feature validada, con fecha/commit. No edites
+> `## Backend (Persona A)` desde esta rama.
+
+_Sin features implementadas todavía._
