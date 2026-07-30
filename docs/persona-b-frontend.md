@@ -53,6 +53,40 @@ al backend, mockeando las respuestas con las fixtures que ya existen
 - `validaciones` corre el checklist E2E contra `boletin_referencia.md`.
 - `expert-docs` + `expert-git` cierran README y commit final.
 
+## Plan detallado de Fase 3 (orden real de ejecución)
+
+Este es el plan que `master` debería presentarte al arrancar — te lo doy ya
+armado para que lo revises antes de que nadie escriba código.
+
+0. **⚠️ Infraestructura de testing primero.** `frontend/` hoy no tiene
+   ningún test ni Vitest instalado (`package.json` solo tiene
+   `dev`/`build`/`start`/`lint`) — antes del punto 1, instala Vitest +
+   React Testing Library y agrega el script `test`. Sin esto
+   `expert-testing` no tiene con qué escribir el rojo.
+1. **Componente compartido de gráfica** (variantes completa/simple/con
+   anotaciones) — constrúyelo primero porque el punto 3 y 4 lo reutilizan;
+   evita que cada pantalla termine con su propia versión.
+2. **Login + redirección por rol** — ya existe `login.tsx`; el trabajo aquí
+   es el test de "redirige a Gobierno si rol=gobierno", etc., y conectar el
+   mock de sesión (real cuando Persona A tenga el endpoint de auth).
+3. **Gobierno** (la más grande, 6 pantallas) — en este orden porque
+   "Generar boletín" es la única que dispara el pipeline en vivo, las demás
+   son de lectura: Inicio → Boletín detalle (mockea con
+   `tests/fixtures/boletin.json`) → Generar boletín (selector semana +
+   progreso en vivo, mock del pipeline) → Tendencias → Auditoría/Logs →
+   Usuarios (toggle WhatsApp deshabilitado).
+4. **Agricultor** — antes que Ayuntamiento/Medios porque introduce la
+   pantalla nueva "Siembra recomendada" (mockea con
+   `tests/fixtures/recomendacion_agricola.json`), que vale la pena validar
+   temprano por ser la que menos se parece a lo ya construido.
+5. **Ayuntamiento** — Inicio (semáforo + "marcar acción") → Boletín
+   (solo lectura, reutiliza lo del punto 3) → Tendencias.
+6. **Medios** — Inicio (publicados) → Boletín narrativo + descargas
+   PNG/PDF/md → Comparativa histórica.
+7. **Reconectar mocks → API real**, endpoint por endpoint, conforme
+   Persona A te avise que cada uno quedó verde (no esperes a que estén
+   todos).
+
 ## Subagentes que usas (en este orden, por componente)
 
 `expert-testing` (test de render/interacción, rojo) → `expert-frontend-web`

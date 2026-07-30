@@ -82,6 +82,50 @@ orquestador, Supabase (con `expert-bd`), API FastAPI, RAG.
 - Políticas RLS finas por rol con `expert-bd` + `expert-seguridad`.
 - Dejar la API corriendo y documentada para que Persona B la consuma.
 
+## Plan detallado de Fase 2 (orden real de ejecución)
+
+Este es el plan que `master` debería presentarte al arrancar — te lo doy ya
+armado para que lo revises antes de que nadie escriba código. Cada punto es
+un ciclo TDD completo (`expert-testing` rojo → `expert-backend` verde →
+`expert-seguridad` si aplica → `validaciones` → `expert-git` commit en
+`persona-a-backend` → `expert-docs`).
+
+1. **Tools MCP** (`backend/mcp_tools/`) — en este orden, porque cada una
+   depende de la anterior para probarse con datos reales de
+   `backend/data/`:
+   `tool_describe` → `tool_filter_by_date` → `tool_calc_stats` (sin
+   agrupación, luego con `agrupacion`, luego con `desde`/`hasta`) →
+   `tool_compare_periods` → `tool_plot_ascii` (caso vacío, caso normal).
+   Cobertura ≥90% antes de pasar al punto 2.
+2. **`severity.py`** — ya hay test escrito (`tests/test_severity.py`, rojo
+   por diseño); solo falta implementar `clasificar_severidad` leyendo
+   `umbrales.json`. Es rápido, hazlo antes de los agentes porque
+   `ejecutar_estadista` lo va a necesitar.
+3. **Los 4 agentes**, en el orden del pipeline (cada uno depende del
+   contrato de salida del anterior para armar su prompt de prueba):
+   `ejecutar_explorador` → `ejecutar_estadista` (aquí conectas las tools
+   del punto 1) → `ejecutar_narrador` → `ejecutar_agronomo`. Los 4 tests ya
+   existen en `tests/test_agents.py` (rojo).
+4. **`pipeline.py`** — `orquestar()` encadenando los 4 agentes +
+   `log_agentes.jsonl` + `BOLETIN_SEMANA_{n}.md`. Test ya existe
+   (`tests/test_pipeline.py`, rojo). Aquí decides y documentas cómo entra
+   el Agrónomo (evento propio en el log, ver brief arriba).
+5. **API FastAPI** (`backend/main.py`) — los 8 endpoints de
+   `arquitectura-hidroalerta.md` §6, uno por uno, con su test de
+   integración antes de implementarlo. Empieza por
+   `POST /api/boletin/generar` (el que dispara el pipeline del punto 4).
+6. **Schema Supabase** — corre `backend/db/migrations/0001_init_schema.sql`
+   contra un proyecto real, luego TDD de `expert-bd` por tabla
+   (insert válido → insert que viola constraint → RLS por rol) antes de
+   conectarlo a la API del punto 5.
+7. **RAG** — última, es tier Pro y depende de tener boletines reales que
+   comparar. Primero genera los 12 boletines sintéticos (punto ya
+   detallado arriba), después embeddings + similitud.
+8. **`run.sh`** — al final, cuando 1-6 estén verdes y exista al menos un
+   build de `frontend/` que servir.
+
+## Comando para arrancar
+
 **Fase 4 · Entrega (junto con Persona B)**
 - `validaciones` corre el checklist completo contra `boletin_referencia.md`.
 - `expert-docs` + `expert-git` cierran README y commit final.
