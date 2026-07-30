@@ -2,11 +2,30 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Callable, Mapping
 from typing import Any
 
+import pandas as pd
+
 from backend.claude_client import ClaudeP, claude_p
-from backend.contracts import PlanAnalisis, ResultadoEstadista
+from backend.contracts import (
+    EvidenciaTool,
+    Metrica,
+    PlanAnalisis,
+    ResultadoEstadista,
+    Severidad,
+    ToolName,
+    Ventana,
+)
+from backend.severity import clasificar_severidad, nivel_alerta_global
+
+_METRICA_A_CSV_COLUMNA: dict[Metrica, tuple[str, str]] = {
+    Metrica.NIVEL_PRESA: ("presas", "nivel_pct"),
+    Metrica.PRECIPITACION_MENSUAL: ("precipitacion", "precipitacion_mm"),
+    Metrica.DELTA_NIVEL_MENSUAL: ("presas", "nivel_pct"),
+    Metrica.TEMPERATURA_MAXIMA: ("temperatura", "tmax_c"),
+}
 
 
 SYSTEM_PROMPT = """
@@ -55,11 +74,89 @@ REGLAS:
 """.strip()
 
 
+def _resultado_json_seguro(resultado: Any) -> Any:
+    if isinstance(resultado, pd.DataFrame):
+        return resultado.to_dict(orient="records")
+    return resultado
+
+
+def _columna_fecha(df: pd.DataFrame) -> str:
+    return next(c for c in df.columns if "fecha" in c or "semana" in c)
+
+
+def _sparkline_real(
+    tools: Mapping[str, Callable[..., Any]], metrica: Metrica, ventana: Ventana
+) -> str:
+    """Sparkline calculado con pandas real, nunca redactado por el modelo (regla 1)."""
+
+    csv_name, columna = _METRICA_A_CSV_COLUMNA[metrica]
+    subset = pd.DataFrame(
+        tools["filter_by_date"](csv_name=csv_name, desde=str(ventana.desde), hasta=str(ventana.hasta))
+    )
+    if subset.empty:
+        return tools["plot_ascii"](serie=[]) or " "
+    fecha_col = _columna_fecha(subset)
+    serie = subset.groupby(fecha_col)[columna].mean().tolist()
+    return tools["plot_ascii"](serie=serie) or " "
+
+
 def ejecutar_estadista(
     plan: PlanAnalisis,
     tools: Mapping[str, Callable[..., Any]],
     claude_fn: ClaudeP = claude_p,
 ) -> ResultadoEstadista:
-    del plan, tools, claude_fn
-    raise NotImplementedError("ROJO esperado: agente Estadista pendiente")
+    evidencias: dict[str, EvidenciaTool] = {}
+    for pregunta in plan.preguntas:
+        if pregunta.tool is ToolName.PLOT_ASCII:
+            # "plot_ascii" no mapea 1:1 a un hallazgo: el Explorador la usa
+            # para pedir sparklines de varias series a la vez, con argumentos
+            # (series/desde/hasta) que no coinciden con la firma real de
+            # tool_plot_ascii(serie, width). Generar esos sparklines reales
+            # requeriría además una tabla columna->csv que hoy no está
+            # definida en ningún contrato; se deja como TODO documentado y el
+            # campo `sparkline` de cada hallazgo lo redacta el modelo por
+            # ahora, no el código.
+            continue
+        tool_fn = tools[pregunta.tool.value]
+        resultado = tool_fn(**pregunta.args)
+        evidencias[pregunta.id] = EvidenciaTool(
+            tool=pregunta.tool,
+            args=pregunta.args,
+            resultado=_resultado_json_seguro(resultado),
+        )
+
+    prompt = json.dumps(
+        {
+            "plan": plan.model_dump(mode="json"),
+            "evidencia_por_pregunta": {
+                pregunta_id: evidencia.model_dump(mode="json")
+                for pregunta_id, evidencia in evidencias.items()
+            },
+        },
+        ensure_ascii=False,
+    )
+
+    bruto = claude_fn(prompt, system=SYSTEM_PROMPT, schema=ResultadoEstadista.model_json_schema())
+
+    # Regla no negociable: la severidad y la evidencia nunca las decide el
+    # modelo — se sustituyen aquí por los resultados reales de las tools y
+    # por clasificar_severidad(), que lee únicamente umbrales.json.
+    hallazgos_corregidos = []
+    for hallazgo in bruto["hallazgos"]:
+        metrica = Metrica(hallazgo["metrica"])
+        severidad = clasificar_severidad(metrica, hallazgo["valor"])
+        hallazgo = {
+            **hallazgo,
+            "severidad": severidad.value,
+            "sparkline": _sparkline_real(tools, metrica, plan.ventana),
+            "evidencia": evidencias[hallazgo["pregunta_id"]].model_dump(mode="json"),
+        }
+        hallazgos_corregidos.append(hallazgo)
+
+    bruto["hallazgos"] = hallazgos_corregidos
+    bruto["nivel_alerta_global"] = nivel_alerta_global(
+        [Severidad(h["severidad"]) for h in hallazgos_corregidos]
+    ).value
+
+    return ResultadoEstadista.model_validate(bruto)
 

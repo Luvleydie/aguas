@@ -65,11 +65,30 @@ def mock_claude_p() -> FakeClaudeP:
     return FakeClaudeP()
 
 
+_SERIES_POR_CSV: dict[str, list[dict[str, Any]]] = {
+    "presas": [
+        {"fecha": "2024-10-14", "nivel_pct": 51.2},
+        {"fecha": "2024-10-17", "nivel_pct": 50.6},
+        {"fecha": "2024-10-20", "nivel_pct": 50.1},
+    ],
+    "precipitacion": [
+        {"fecha": "2024-10-01", "precipitacion_mm": 12.0},
+        {"fecha": "2024-10-08", "precipitacion_mm": 18.4},
+        {"fecha": "2024-10-15", "precipitacion_mm": 23.3},
+    ],
+    "temperatura": [
+        {"fecha": "2024-10-14", "tmax_c": 27.1},
+        {"fecha": "2024-10-17", "tmax_c": 26.0},
+        {"fecha": "2024-10-20", "tmax_c": 25.8},
+    ],
+}
+
+
 @pytest.fixture
 def fake_tools() -> dict[str, Any]:
     return {
         "describe": lambda **_: {"n_filas": 1},
-        "filter_by_date": lambda **_: [{"fecha": "2024-10-14"}],
+        "filter_by_date": lambda csv_name, **_: _SERIES_POR_CSV.get(csv_name, []),
         "calc_stats": lambda **_: {"media": 50.8},
         "compare_periods": lambda **_: {"delta_absoluto": -2.4},
         "plot_ascii": lambda **_: "▁▂▃",
