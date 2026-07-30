@@ -171,15 +171,16 @@ Como primer mensaje:
 ```
 Actúa como el subagente master (.claude/agents/master.md). Soy Persona A —
 backend, trabajando en la rama persona-a-backend (nunca en main). Lee
-docs/persona-a-backend.md y arquitectura-hidroalerta.md §3, §4, §6, §7.
-Antes de escribir o ejecutar nada, arma un plan detallado de la Fase 2
-(tareas 04-06: tools MCP, los 4 agentes, orquestador, schema Supabase, RAG,
-run.sh) con el orden de subagentes por feature
+docs/persona-a-backend.md completo, incluida la sección "Plan detallado de
+Fase 2" — ya viene armado, no lo rehagas desde cero. También lee
+arquitectura-hidroalerta.md §3, §4, §6, §7. Antes de escribir o ejecutar
+nada, revisa ese plan, ajústalo si encuentras algo desactualizado, y
+muéstramelo con el orden de subagentes por feature
 (expert-testing → expert-backend → expert-seguridad → validaciones →
-expert-git → expert-docs) y muéstramelo para que lo apruebe antes de
-implementar. No toques frontend/ ni ningún archivo de Persona B. Cada
-commit va a persona-a-backend, nunca a main. Antes de cada commit,
-expert-git debe correr su escaneo de secretos.
+expert-git → expert-docs) para que lo apruebe antes de implementar. No
+toques frontend/ ni ningún archivo de Persona B. Cada commit va a
+persona-a-backend, nunca a main. Antes de cada commit, expert-git debe
+correr su escaneo de secretos.
 ```
 
 ## Merge a main

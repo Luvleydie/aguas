@@ -137,16 +137,15 @@ Como primer mensaje:
 ```
 Actúa como el subagente master (.claude/agents/master.md). Soy Persona B —
 frontend, trabajando en la rama persona-b-frontend (nunca en main). Lee
-docs/persona-b-frontend.md y arquitectura-hidroalerta.md §8. Antes de
-escribir o ejecutar nada, arma un plan detallado de la Fase 3 (las 4
-pantallas por rol sobre frontend/, Next.js, NO Vite, usando las fixtures de
-tests/fixtures/ como datos mock mientras el backend no esté listo) con el
-orden de subagentes por componente
+docs/persona-b-frontend.md completo, incluida la sección "Plan detallado de
+Fase 3" — ya viene armado, no lo rehagas desde cero. Antes de escribir o
+ejecutar nada, revísalo, ajústalo si encuentras algo desactualizado (por
+ejemplo si `frontend/` ya tiene Vitest instalado o algún componente ya
+existe), y muéstramelo con el orden de subagentes por componente
 (expert-testing → expert-frontend-web → expert-seguridad → validaciones →
-expert-git → expert-docs) y muéstramelo para que lo apruebe antes de
-implementar. No toques backend/. Cada commit va a persona-b-frontend, nunca
-a main. Antes de cada commit, expert-git debe correr su escaneo de
-secretos.
+expert-git → expert-docs) para que lo apruebe antes de implementar. No
+toques backend/. Cada commit va a persona-b-frontend, nunca a main. Antes
+de cada commit, expert-git debe correr su escaneo de secretos.
 ```
 
 ## Merge a main
