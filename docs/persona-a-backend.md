@@ -49,7 +49,10 @@ orquestador, Supabase (con `expert-bd`), API FastAPI, RAG.
    `hallazgos`). Registra un evento por agente en `log_agentes.jsonl`
    (regla 7) y escribe `BOLETIN_SEMANA_{n}.md`.
 5. API FastAPI + JWT validado contra Supabase Auth + RLS + sanitización de
-   inputs (con `expert-seguridad`, en esta misma fase, no al final).
+   inputs (con `expert-seguridad`, en esta misma fase, no al final). Los 8
+   endpoints exactos (rutas, rol requerido, función) están en
+   `arquitectura-hidroalerta.md` §6 — impleméntalos tal cual, no inventes
+   rutas nuevas.
 6. Schema Supabase (`usuarios`, `boletines`, `agent_logs`,
    `acciones_ayuntamiento`, `alertas_enviadas`) con `expert-bd`. Ya hay un
    punto de partida en `backend/db/migrations/0001_init_schema.sql` (enums,
@@ -57,6 +60,22 @@ orquestador, Supabase (con `expert-bd`), API FastAPI, RAG.
    metodología TDD de `expert-bd.md` sobre eso: escribe los tests de
    insert/constraint/RLS por tabla antes de darla por "lista", no asumas
    que el DDL ya es suficiente.
+7. **RAG (§5 de la arquitectura)** — sentence-transformers sobre 12
+   boletines históricos sintéticos. ⚠️ Ese dataset **no existe todavía en
+   ningún lado del repo** — nadie lo generó. Antes de poder implementar el
+   RAG tienes que crear tú los 12 boletines sintéticos (mismo formato que
+   `assets/boletin_referencia.md`, semanas/años distintos, severidades
+   variadas para que la similitud coseno tenga con qué comparar) y
+   guardarlos en `backend/data/boletines_historicos/` o directo en Supabase
+   (tabla `boletines`) — decide cuál y documéntalo. Es Fase 2 tier Pro: si
+   se te complica el tiempo, es lo primero que se puede recortar sin romper
+   el resto del pipeline (el Narrador simplemente no recibe
+   `contexto_historico`).
+8. **`run.sh`** — el comando único que levanta todo (`arquitectura-hidroalerta.md`
+   §6 y §12, "Demo local"): build del frontend + `uvicorn` sirviendo API +
+   estáticos en un solo puerto. No está en ningún brief todavía; es tuyo
+   porque es infraestructura de backend. Coordina con Persona B el comando
+   de build exacto de `frontend/` (Next.js) antes de escribirlo.
 
 **Fase 3 (tu parte)**
 - Políticas RLS finas por rol con `expert-bd` + `expert-seguridad`.
