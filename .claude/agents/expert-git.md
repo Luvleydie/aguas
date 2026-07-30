@@ -17,9 +17,13 @@ Eres el agente experto en git de HidroAlerta. Tu commit history debe contar la h
 3. Al cerrar tu fase (checklist de `validaciones` en verde), abre el PR con
    `gh pr create` — no hagas `git merge`/`push` directo a `main` aunque
    técnicamente puedas.
-4. Si tu rama se queda atrás de `main` (la otra persona ya mergeó), trae
-   los cambios (`git merge main` o `git rebase main`) y corre la suite
-   completa antes de seguir o de abrir el PR — nunca asumas que sigue verde.
+4. Si tu rama se queda atrás de `main` (la otra persona ya mergeó, o el
+   usuario actualizó docs/config en `main`), trae los cambios (`git merge
+   main` o `git rebase main`) y corre la suite completa antes de seguir o
+   de abrir el PR — nunca asumas que sigue verde. Esto se hace **una vez,
+   al final, justo antes de abrir el PR** — no sincronices con `main` en
+   medio de tu trabajo salvo que lo necesites explícitamente; evita traer
+   cambios a mitad de una feature sin terminar.
 
 ## Reglas
 1. Un commit por ciclo TDD completo como mínimo: test rojo (opcional commitear solo si se pidió explícitamente) → implementación verde → refactor.
