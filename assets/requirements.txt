@@ -1,0 +1,14 @@
+# Reto 02 · HidroAlerta
+# Python 3.11+
+pandas>=2.0.0
+numpy>=1.26.0
+jsonschema>=4.20.0
+tqdm>=4.66.0
+mcp[cli]>=1.0.0
+
+# Frontend para los jueces (elige UNO — descomenta el que uses)
+# streamlit>=1.30.0     # recomendado: dashboard con gráficas nativo
+# matplotlib>=3.8.0     # si prefieres imagen estática
+# plotly>=5.18.0        # si quieres gráficas interactivas
+# flask>=3.0.0
+# gradio>=4.15.0

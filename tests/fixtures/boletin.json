@@ -1,0 +1,7 @@
+{
+  "agente": "narrador",
+  "semana": 42,
+  "nivel_alerta_global": "amarillo",
+  "markdown": "# Boletín HidroAlerta · Semana 42\n\n## Estado de presas\n\nPromedio ponderado: **50.8 %**. Tendencia: `▃▃▂▂▂▁▁`.\n\n## Precipitación\n\nAcumulado medio mensual: **53.7 mm**. Tendencia: `▁▂▅█▆▃▂`.\n\n## Alerta\n\nNivel global **AMARILLO**; la temperatura máxima promedio fue 26.3 °C (`▅▆▃▂▂▁▃`).\n\n## Recomendación\n\nActivar vigilancia y campaña preventiva de ahorro.",
+  "recomendacion": "Activar vigilancia y campaña preventiva de ahorro."
+}

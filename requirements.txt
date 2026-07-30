@@ -1,0 +1,4 @@
+-r assets/requirements.txt
+
+# Contratos entre agentes
+pydantic>=2.7,<3

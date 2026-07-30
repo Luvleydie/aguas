@@ -1,0 +1,37 @@
+{
+  "presas": {
+    "n_filas": 9,
+    "columnas": {
+      "fecha": "object",
+      "presa": "object",
+      "nivel_pct": "float64",
+      "volumen_hm3": "float64",
+      "capacidad_hm3": "float64"
+    },
+    "fecha_min": "2024-09-14",
+    "fecha_max": "2024-10-20"
+  },
+  "precipitacion": {
+    "n_filas": 10,
+    "columnas": {
+      "semana_inicio": "object",
+      "estacion": "object",
+      "precipitacion_mm": "float64",
+      "dias_con_lluvia": "int64"
+    },
+    "fecha_min": "2024-10-07",
+    "fecha_max": "2024-10-14"
+  },
+  "temperatura": {
+    "n_filas": 7,
+    "columnas": {
+      "fecha": "object",
+      "region": "object",
+      "tmax_c": "float64",
+      "tmin_c": "float64",
+      "tmed_c": "float64"
+    },
+    "fecha_min": "2024-10-14",
+    "fecha_max": "2024-10-20"
+  }
+}

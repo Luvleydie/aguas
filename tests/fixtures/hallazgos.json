@@ -1,0 +1,99 @@
+{
+  "agente": "estadista",
+  "semana": 42,
+  "ventana": {
+    "desde": "2024-10-14",
+    "hasta": "2024-10-20"
+  },
+  "hallazgos": [
+    {
+      "id": "h_nivel",
+      "pregunta_id": "nivel_actual",
+      "metrica": "nivel_presa_pct",
+      "valor": 50.8,
+      "unidad": "%",
+      "severidad": "warn",
+      "contexto": "El promedio ponderado se encuentra entre 40 y 60 por ciento.",
+      "sparkline": "▃▃▂▂▂▁▁",
+      "evidencia": {
+        "tool": "calc_stats",
+        "args": {
+          "csv_name": "presas",
+          "columna": "nivel_pct",
+          "desde": "2024-10-14",
+          "hasta": "2024-10-20"
+        },
+        "resultado": {
+          "media_ponderada": 50.8
+        }
+      }
+    },
+    {
+      "id": "h_delta",
+      "pregunta_id": "delta_mensual",
+      "metrica": "delta_nivel_mensual_pp",
+      "valor": -2.4,
+      "unidad": "pp",
+      "severidad": "warn",
+      "contexto": "El nivel descendió frente al mes anterior.",
+      "sparkline": "▅▄▃▂▂▁▁",
+      "evidencia": {
+        "tool": "compare_periods",
+        "args": {
+          "csv_name": "presas",
+          "columna": "nivel_pct",
+          "periodo_a": ["2024-09-14", "2024-09-20"],
+          "periodo_b": ["2024-10-14", "2024-10-20"]
+        },
+        "resultado": {
+          "delta_absoluto": -2.4
+        }
+      }
+    },
+    {
+      "id": "h_precipitacion",
+      "pregunta_id": "precipitacion_mes",
+      "metrica": "precipitacion_mensual_mm",
+      "valor": 53.7,
+      "unidad": "mm",
+      "severidad": "warn",
+      "contexto": "La media estatal se encuentra entre 40 y 80 milímetros.",
+      "sparkline": "▁▂▅█▆▃▂",
+      "evidencia": {
+        "tool": "calc_stats",
+        "args": {
+          "csv_name": "precipitacion",
+          "columna": "precipitacion_mm",
+          "desde": "2024-10-01",
+          "hasta": "2024-10-20"
+        },
+        "resultado": {
+          "acumulado_medio": 53.7
+        }
+      }
+    },
+    {
+      "id": "h_temperatura",
+      "pregunta_id": "temperatura_semana",
+      "metrica": "temp_max_promedio_c",
+      "valor": 26.3,
+      "unidad": "°C",
+      "severidad": "info",
+      "contexto": "La temperatura máxima promedio permanece debajo de 30 grados.",
+      "sparkline": "▅▆▃▂▂▁▃",
+      "evidencia": {
+        "tool": "calc_stats",
+        "args": {
+          "csv_name": "temperatura",
+          "columna": "tmax_c",
+          "desde": "2024-10-14",
+          "hasta": "2024-10-20"
+        },
+        "resultado": {
+          "media": 26.3
+        }
+      }
+    }
+  ],
+  "nivel_alerta_global": "amarillo"
+}
