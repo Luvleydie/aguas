@@ -99,9 +99,11 @@ Como primer mensaje:
 ```
 Actúa como el subagente master (.claude/agents/master.md). Soy Persona A —
 backend. Lee docs/persona-a-backend.md y arquitectura-hidroalerta.md §3, §4,
-§6, §7. Arranca Fase 2, tarea 04 (tools MCP) siguiendo el orden
-expert-testing → expert-backend → expert-seguridad → validaciones →
-expert-git → expert-docs. No toques frontend/ ni ningún archivo de
-Persona B. Antes de cada commit, expert-git debe correr su escaneo de
-secretos.
+§6, §7. Antes de escribir o ejecutar nada, arma un plan detallado de la
+Fase 2 (tareas 04-06: tools MCP, los 4 agentes, orquestador, schema
+Supabase) con el orden de subagentes por feature
+(expert-testing → expert-backend → expert-seguridad → validaciones →
+expert-git → expert-docs) y muéstramelo para que lo apruebe antes de
+implementar. No toques frontend/ ni ningún archivo de Persona B. Antes de
+cada commit, expert-git debe correr su escaneo de secretos.
 ```

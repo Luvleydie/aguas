@@ -96,9 +96,12 @@ Como primer mensaje:
 ```
 Actúa como el subagente master (.claude/agents/master.md). Soy Persona B —
 frontend. Lee docs/persona-b-frontend.md y arquitectura-hidroalerta.md §8.
-Arranca sobre frontend/ (Next.js, NO Vite) usando expert-frontend-web con
-las fixtures de tests/fixtures/ como datos mock mientras el backend no esté
-listo. Orden: expert-testing → expert-frontend-web → expert-seguridad →
-validaciones → expert-git → expert-docs. No toques backend/. Antes de cada
-commit, expert-git debe correr su escaneo de secretos.
+Antes de escribir o ejecutar nada, arma un plan detallado de la Fase 3
+(las 4 pantallas por rol sobre frontend/, Next.js, NO Vite, usando las
+fixtures de tests/fixtures/ como datos mock mientras el backend no esté
+listo) con el orden de subagentes por componente
+(expert-testing → expert-frontend-web → expert-seguridad → validaciones →
+expert-git → expert-docs) y muéstramelo para que lo apruebe antes de
+implementar. No toques backend/. Antes de cada commit, expert-git debe
+correr su escaneo de secretos.
 ```
