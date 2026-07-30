@@ -84,6 +84,25 @@ def _columna_fecha(df: pd.DataFrame) -> str:
     return next(c for c in df.columns if "fecha" in c or "semana" in c)
 
 
+def _valor_real(tool: ToolName, resultado: Any) -> float:
+    """Extrae el valor numérico real de la evidencia de la tool — nunca el
+    que haya propuesto el modelo (regla 1). ``calc_stats``/``compare_periods``
+    devuelven un dict plano, o un dict por grupo si el plan pidió agrupación
+    (en ese caso, promedio simple entre grupos: ninguna tool implementa
+    ponderación por capacidad u otro criterio)."""
+
+    campo = "delta_absoluto" if tool is ToolName.COMPARE_PERIODS else "media"
+    if isinstance(resultado, dict) and campo in resultado:
+        return float(resultado[campo])
+    if isinstance(resultado, dict):
+        valores = [
+            sub[campo] for sub in resultado.values() if isinstance(sub, dict) and campo in sub
+        ]
+        if valores:
+            return round(sum(valores) / len(valores), 3)
+    raise ValueError(f"No se pudo extraer un valor numérico de la evidencia de {tool.value}")
+
+
 def _sparkline_real(
     tools: Mapping[str, Callable[..., Any]], metrica: Metrica, ventana: Ventana
 ) -> str:
@@ -144,12 +163,15 @@ def ejecutar_estadista(
     hallazgos_corregidos = []
     for hallazgo in bruto["hallazgos"]:
         metrica = Metrica(hallazgo["metrica"])
-        severidad = clasificar_severidad(metrica, hallazgo["valor"])
+        evidencia = evidencias[hallazgo["pregunta_id"]]
+        valor = _valor_real(evidencia.tool, evidencia.resultado)
+        severidad = clasificar_severidad(metrica, valor)
         hallazgo = {
             **hallazgo,
+            "valor": valor,
             "severidad": severidad.value,
             "sparkline": _sparkline_real(tools, metrica, plan.ventana),
-            "evidencia": evidencias[hallazgo["pregunta_id"]].model_dump(mode="json"),
+            "evidencia": evidencia.model_dump(mode="json"),
         }
         hallazgos_corregidos.append(hallazgo)
 

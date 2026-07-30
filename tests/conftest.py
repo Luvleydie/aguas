@@ -84,12 +84,19 @@ _SERIES_POR_CSV: dict[str, list[dict[str, Any]]] = {
 }
 
 
+_STATS_POR_CSV: dict[str, dict[str, float]] = {
+    "presas": {"n": 3, "media": 50.8, "mediana": 50.8, "desv": 3.6, "min": 46.9, "max": 58.4},
+    "precipitacion": {"n": 5, "media": 53.7, "mediana": 41.7, "desv": 34.9, "min": 22.1, "max": 118.9},
+    "temperatura": {"n": 7, "media": 26.3, "mediana": 26.3, "desv": 0.7, "min": 24.8, "max": 27.4},
+}
+
+
 @pytest.fixture
 def fake_tools() -> dict[str, Any]:
     return {
         "describe": lambda **_: {"n_filas": 1},
         "filter_by_date": lambda csv_name, **_: _SERIES_POR_CSV.get(csv_name, []),
-        "calc_stats": lambda **_: {"media": 50.8},
+        "calc_stats": lambda csv_name, **_: _STATS_POR_CSV.get(csv_name, {"media": 0.0}),
         "compare_periods": lambda **_: {"delta_absoluto": -2.4},
         "plot_ascii": lambda **_: "▁▂▃",
     }

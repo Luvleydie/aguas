@@ -42,6 +42,20 @@ def test_estadista_entrega_evidencia_de_tools(
     assert mock_claude_p.calls[-1]["schema"]["title"] == "ResultadoEstadista"
 
 
+def test_estadista_ignora_el_valor_que_alucine_el_modelo_y_usa_el_de_la_tool(
+    load_fixture, mock_claude_p, fake_tools
+):
+    plan = PlanAnalisis.model_validate(load_fixture("plan_analisis.json"))
+    # El modelo "alucina" un valor que no coincide con lo que calculó la tool.
+    mock_claude_p.responses["ResultadoEstadista"]["hallazgos"][0]["valor"] = 999.0
+
+    resultado = ejecutar_estadista(plan, tools=fake_tools, claude_fn=mock_claude_p)
+
+    hallazgo_nivel = next(h for h in resultado.hallazgos if h.pregunta_id == "nivel_actual")
+    assert hallazgo_nivel.valor != 999.0
+    assert hallazgo_nivel.valor == 50.8
+
+
 def test_estadista_calcula_sparkline_con_tools_no_con_el_modelo(
     load_fixture, mock_claude_p, fake_tools
 ):
