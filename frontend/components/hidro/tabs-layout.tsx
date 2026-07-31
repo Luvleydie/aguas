@@ -26,7 +26,7 @@ export function TabsLayout({
 }) {
   return (
     <div className="min-h-svh bg-background">
-      <div className="mx-auto max-w-2xl px-5 pt-5 md:px-8 md:pt-8">
+      <div className="mx-auto max-w-4xl px-5 pt-5 md:px-8 md:pt-8">
         <header className="overflow-hidden rounded-3xl bg-primary text-primary-foreground shadow-sm">
           <div className="flex items-center justify-between gap-3 px-5 py-4">
             <Logo size="sm" variant="light" />
@@ -65,7 +65,7 @@ export function TabsLayout({
           </nav>
         </header>
       </div>
-      <main className="mx-auto max-w-2xl p-5 md:p-8">{children}</main>
+      <main className="mx-auto max-w-4xl p-5 md:p-8">{children}</main>
     </div>
   )
 }

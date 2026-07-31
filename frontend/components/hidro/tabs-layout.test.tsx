@@ -19,9 +19,9 @@ describe("TabsLayout", () => {
     expect(header).toHaveClass("rounded-3xl")
 
     const wrapper = header?.parentElement
-    expect(wrapper).toHaveClass("mx-auto", "max-w-2xl")
+    expect(wrapper).toHaveClass("mx-auto", "max-w-4xl")
 
     const main = screen.getByText("contenido").closest("main")
-    expect(main).toHaveClass("max-w-2xl")
+    expect(main).toHaveClass("max-w-4xl")
   })
 })
