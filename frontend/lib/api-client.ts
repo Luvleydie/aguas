@@ -16,6 +16,8 @@ export interface ApiFetchOptions {
   body?: unknown
 }
 
+export type { BoletinReal, Hallazgo } from "@/lib/boletin-adapter"
+
 export interface LoginResponse {
   access_token: string
   refresh_token: string

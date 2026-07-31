@@ -17,7 +17,7 @@ export function GobiernoInicio({ onNavigate, token }: { onNavigate: (id: string)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    apiFetch<BoletinReal>("/api/boletin/historico", { token })
+    apiFetch<BoletinReal[]>("/api/boletin/historico", { token })
       .then((lista) => { if (lista.length > 0) setBoletin(lista[0]) })
       .catch(() => {})
       .finally(() => setLoading(false))
