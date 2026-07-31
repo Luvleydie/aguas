@@ -48,6 +48,12 @@ class LoginRequest(BaseModel):
     password: str = Field(min_length=1)
 
 
+class RegisterRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=6)
+    rol: str = Field(default="agricultor")
+
+
 class GenerarBoletinRequest(BaseModel):
     semana: int = Field(ge=1, le=52)
     anio: int = Field(default_factory=lambda: datetime.now(UTC).year, ge=2000, le=2100)
@@ -221,6 +227,34 @@ def login(body: LoginRequest) -> dict[str, Any]:
 @app.get("/api/auth/me")
 def auth_me(usuario: UsuarioActual = Depends(get_current_user)) -> dict[str, Any]:
     return {"id": usuario.id, "email": usuario.email, "rol": usuario.rol}
+
+
+@app.post("/api/auth/register")
+def register(body: RegisterRequest) -> dict[str, Any]:
+    cliente = _anon_client()
+    try:
+        resultado = cliente.auth.sign_up({
+            "email": body.email,
+            "password": body.password,
+        })
+    except Exception as exc:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "No se pudo registrar el usuario") from exc
+
+    if resultado.user is None:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "No se pudo crear el usuario")
+
+    service = _service_client()
+    service.table("usuarios").insert({
+        "auth_user_id": resultado.user.id,
+        "email": body.email,
+        "rol": body.rol,
+    }).execute()
+
+    return {
+        "id": resultado.user.id,
+        "email": resultado.user.email,
+        "rol": body.rol,
+    }
 
 
 @app.post("/api/boletin/generar", status_code=status.HTTP_201_CREATED)

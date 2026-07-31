@@ -2,25 +2,42 @@
 
 import type React from "react"
 import { useState } from "react"
-import { Mail, Lock, Loader2 } from "lucide-react"
+import { Mail, Lock, Loader2, UserPlus } from "lucide-react"
 import { Logo } from "@/components/hidro/logo"
 import { Button } from "@/components/ui/button"
-import { type UserProfile } from "@/lib/api-client"
+import { type UserProfile, register } from "@/lib/api-client"
+
+const roles = [
+  { id: "gobierno", nombre: "Gobierno del Estado" },
+  { id: "ayuntamiento", nombre: "Ayuntamiento" },
+  { id: "medios", nombre: "Medios" },
+  { id: "agricultor", nombre: "Agricultor" },
+]
 
 export function Login({ onLogin }: { onLogin: (email: string, password: string) => Promise<UserProfile> }) {
-  const [email, setEmail] = useState("demo@durango.gob.mx")
-  const [password, setPassword] = useState("hidroalerta")
+  const [mode, setMode] = useState<"login" | "register">("login")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [rol, setRol] = useState("gobierno")
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    setSuccess(null)
     setLoading(true)
     try {
-      await onLogin(email, password)
+      if (mode === "register") {
+        await register(email, password, rol)
+        setSuccess("Usuario registrado. Ahora puedes iniciar sesión.")
+        setMode("login")
+      } else {
+        await onLogin(email, password)
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al iniciar sesión")
+      setError(err instanceof Error ? err.message : "Error al procesar")
     } finally {
       setLoading(false)
     }
@@ -73,14 +90,47 @@ export function Login({ onLogin }: { onLogin: (email: string, password: string) 
             </div>
           </div>
 
+          {mode === "register" && (
+            <div className="space-y-2">
+              <label htmlFor="rol" className="text-base font-semibold text-foreground">
+                Tipo de cuenta
+              </label>
+              <select
+                id="rol"
+                value={rol}
+                onChange={(e) => setRol(e.target.value)}
+                className="h-14 w-full rounded-2xl border border-input bg-background px-4 text-lg text-foreground outline-none focus:border-ring focus:ring-3 focus:ring-ring/40"
+              >
+                {roles.map((r) => (
+                  <option key={r.id} value={r.id}>{r.nombre}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {error && (
             <p className="text-sm font-medium text-destructive">{error}</p>
           )}
 
+          {success && (
+            <p className="text-sm font-medium text-green-600">{success}</p>
+          )}
+
           <Button type="submit" disabled={loading} className="h-14 w-full text-lg font-semibold">
-            {loading ? <Loader2 size={22} className="animate-spin" /> : "Iniciar sesión"}
+            {loading ? <Loader2 size={22} className="animate-spin" /> : mode === "register" ? <UserPlus size={22} /> : "Iniciar sesión"}
+            {loading ? "Procesando..." : mode === "register" ? "Registrarse" : "Iniciar sesión"}
           </Button>
         </form>
+
+        <div className="mt-4 text-center">
+          <button
+            type="button"
+            onClick={() => { setMode(mode === "login" ? "register" : "login"); setError(null); setSuccess(null) }}
+            className="text-sm text-primary hover:underline"
+          >
+            {mode === "login" ? "¿No tienes cuenta? Regístrate" : "¿Ya tienes cuenta? Inicia sesión"}
+          </button>
+        </div>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
           Gobierno del Estado de Durango · Comisión Estatal del Agua

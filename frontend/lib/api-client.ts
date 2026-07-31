@@ -35,6 +35,13 @@ export async function login(email: string, password: string): Promise<LoginRespo
   })
 }
 
+export async function register(email: string, password: string, rol: string): Promise<{ id: string; email: string; rol: string }> {
+  return apiFetch("/api/auth/register", {
+    method: "POST",
+    body: { email, password, rol },
+  })
+}
+
 export async function getProfile(token: string): Promise<UserProfile> {
   return apiFetch<UserProfile>("/api/auth/me", { token })
 }
