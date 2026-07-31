@@ -57,6 +57,7 @@ class RegisterRequest(BaseModel):
 class GenerarBoletinRequest(BaseModel):
     semana: int = Field(ge=1, le=52)
     anio: int = Field(default_factory=lambda: datetime.now(UTC).year, ge=2000, le=2100)
+    forzar: bool = False
 
 
 class AccionAyuntamientoRequest(BaseModel):
@@ -263,6 +264,18 @@ def generar_boletin(
     usuario: UsuarioActual = Depends(require_gobierno),
     db: Client = Depends(get_db_gobierno),
 ) -> dict[str, Any]:
+    existente = _ultimo_boletin_de_semana(db, "boletines", body.semana)
+    sobrescribir = False
+    if existente is not None and existente.get("anio") == body.anio:
+        if not body.forzar:
+            raise HTTPException(
+                status.HTTP_409_CONFLICT,
+                "Ya existe un boletín para la semana {}/{}. "
+                "¿Deseas regenerar y sobrescribir? Envía forzar=true.".format(body.semana, body.anio),
+            )
+        db.table("agent_logs").delete().eq("boletin_id", existente["id"]).execute()
+        sobrescribir = True
+
     boletin, recomendacion = orquestar(
         semana=body.semana,
         data_dir=DATA_DIR,
@@ -279,24 +292,29 @@ def generar_boletin(
         (evento["mensaje"] for evento in eventos if evento["agente"] == "estadista"), {}
     )
 
-    fila = (
-        db.table("boletines")
-        .insert(
-            {
-                "semana": body.semana,
-                "anio": body.anio,
-                "markdown": boletin.markdown,
-                "hallazgos_json": hallazgos_json,
-                "recomendacion_agricola_json": recomendacion.model_dump(mode="json"),
-                "nivel_alerta_global": boletin.nivel_alerta_global.value,
-                "recomendacion": boletin.recomendacion,
-                "publicado": False,
-                "generado_por": usuario.id,
-            }
+    datos_boletin = {
+        "semana": body.semana,
+        "anio": body.anio,
+        "markdown": boletin.markdown,
+        "hallazgos_json": hallazgos_json,
+        "recomendacion_agricola_json": recomendacion.model_dump(mode="json"),
+        "nivel_alerta_global": boletin.nivel_alerta_global.value,
+        "recomendacion": boletin.recomendacion,
+        "publicado": False,
+        "generado_por": usuario.id,
+    }
+
+    if sobrescribir:
+        fila = (
+            db.table("boletines")
+            .update(datos_boletin)
+            .eq("id", existente["id"])
+            .execute()
         )
-        .execute()
-    )
-    boletin_id = fila.data[0]["id"]
+        boletin_id = existente["id"]
+    else:
+        fila = db.table("boletines").insert(datos_boletin).execute()
+        boletin_id = fila.data[0]["id"]
 
     db.table("agent_logs").insert(
         [
@@ -309,7 +327,7 @@ def generar_boletin(
         ]
     ).execute()
 
-    return fila.data[0]
+    return {"id": boletin_id, **datos_boletin}
 
 
 @app.get("/api/boletin/historico")
