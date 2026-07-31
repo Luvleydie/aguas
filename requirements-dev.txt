@@ -1,3 +1,7 @@
 -r requirements.txt
 
 pytest>=8,<9
+pytest-cov>=5,<6
+
+# Tests de integración de base de datos (Supabase/Postgres)
+psycopg[binary]>=3.1,<4

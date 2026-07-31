@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 from backend.claude_client import ClaudeP, claude_p
 from backend.contracts import Boletin, ResultadoEstadista
 
@@ -48,7 +50,17 @@ REGLAS:
 def ejecutar_narrador(
     resultado: ResultadoEstadista,
     claude_fn: ClaudeP = claude_p,
+    contexto_historico: list[dict[str, object]] | None = None,
 ) -> Boletin:
-    del resultado, claude_fn
-    raise NotImplementedError("ROJO esperado: agente Narrador pendiente")
+    cuerpo: dict[str, object] = {"hallazgos": resultado.model_dump(mode="json")}
+    if contexto_historico:
+        cuerpo["contexto_historico"] = contexto_historico
+    prompt = json.dumps(cuerpo, ensure_ascii=False)
+    bruto = claude_fn(prompt, system=SYSTEM_PROMPT, schema=Boletin.model_json_schema())
+
+    # El nivel de alerta global ya lo calculó el Estadista con umbrales.json;
+    # el Narrador solo lo traslada, nunca lo vuelve a decidir.
+    bruto["nivel_alerta_global"] = resultado.nivel_alerta_global.value
+
+    return Boletin.model_validate(bruto)
 

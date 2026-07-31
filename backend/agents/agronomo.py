@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from backend.claude_client import ClaudeP, claude_p
@@ -46,5 +47,13 @@ def ejecutar_agronomo(
     semana: int,
     claude_fn: ClaudeP = claude_p,
 ) -> RecomendacionAgricola:
-    del hallazgos, calendario_cultivos, semana, claude_fn
-    raise NotImplementedError("ROJO esperado: agente Agrónomo pendiente")
+    prompt = json.dumps(
+        {
+            "hallazgos": hallazgos.model_dump(mode="json"),
+            "calendario_cultivos": calendario_cultivos,
+            "semana": semana,
+        },
+        ensure_ascii=False,
+    )
+    bruto = claude_fn(prompt, system=SYSTEM_PROMPT, schema=RecomendacionAgricola.model_json_schema())
+    return RecomendacionAgricola.model_validate(bruto)

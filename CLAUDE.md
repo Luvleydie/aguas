@@ -9,15 +9,6 @@ Estadista, Narrador de boletín y Agrónomo (recomendación agrícola).
 
 ## Estado actual
 
-Este repositorio está detenido deliberadamente en **1 · Setup**:
-
-- ambiente y assets preparados;
-- estructura `backend/`, `frontend/` y `tests/`;
-- contratos Pydantic v2 para los 4 agentes, fixtures y doble de prueba de
-  `claude_p`;
-- pruebas de contratos verdes y pruebas funcionales en rojo por
-  `NotImplementedError`.
-
 **Checkpoint aprobado (2026-07-30):** el usuario dio luz verde explícita para
 salir de Fase 1 y arrancar Fase 2 (backend) y Fase 3 (frontend). `master` y
 los subagentes de implementación (`expert-backend`, `expert-frontend-web`,
@@ -25,6 +16,13 @@ los subagentes de implementación (`expert-backend`, `expert-frontend-web`,
 pantallas — siguiendo TDD estricto y el reparto de `docs/persona-a-backend.md`
 / `docs/persona-b-frontend.md`, cada quien en su rama
 (`persona-a-backend` / `persona-b-frontend`), nunca directo en `main`.
+
+**Fase 2 (backend) completa en `persona-a-backend`, pendiente de PR a
+`main`:** tools MCP, severidad, los 4 agentes, orquestador (`pipeline.py`),
+API FastAPI (8 endpoints de `arquitectura-hidroalerta.md` §6), schema
+Supabase con RLS por rol (validado contra el proyecto real, `tests/db/`), RAG
+sobre 12 boletines sintéticos y `run.sh` (build de `frontend/` + uvicorn en
+un solo puerto). Detalle de estado y evidencia en `docs/PROYECTO.md`.
 
 ## Reglas no negociables
 

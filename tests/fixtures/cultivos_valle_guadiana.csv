@@ -1,0 +1,4 @@
+﻿cultivo,mes_inicio_siembra,mes_fin_siembra,etapa_critica_semana_desde,etapa_critica_semana_desde_siembra,necesidad_agua_mm_semana_etapa_normal,necesidad_agua_mm_semana_etapa_critica,tolerancia_sequia,notas
+Maíz,4,6,8,10,35,55,media,Sensible a heladas tempranas en etapa de llenado de grano.
+Frijol,6,8,5,7,25,45,baja,Muy sensible al estrés hídrico durante la floración.
+Alfalfa,9,11,4,8,40,60,alta,Alta demanda hídrica anual pero sobrevive sequías por raíz profunda.
