@@ -10,7 +10,9 @@ from backend.agents.explorador import SYSTEM_PROMPT as EXPLORADOR_PROMPT
 from backend.agents.explorador import ejecutar_explorador
 from backend.agents.narrador import SYSTEM_PROMPT as NARRADOR_PROMPT
 from backend.agents.narrador import ejecutar_narrador
-from backend.contracts import Boletin, PlanAnalisis, RecomendacionAgricola, ResultadoEstadista
+from backend.agents.supervisor import ejecutar_supervisor
+from backend.agents.juez import agente_juez
+from backend.contracts import Boletin, PlanAnalisis, RecomendacionAgricola, ResultadoEstadista, SupervisorMultiAudiencia
 
 
 def test_explorador_usa_prompt_y_schema_propios(load_fixture, mock_claude_p):
@@ -109,4 +111,99 @@ def test_agronomo_traduce_hallazgos_en_mensaje_simple(load_fixture, mock_claude_
     assert isinstance(resultado, RecomendacionAgricola)
     assert mock_claude_p.calls[-1]["system"] == AGRONOMO_PROMPT
     assert mock_claude_p.calls[-1]["schema"]["title"] == "RecomendacionAgricola"
+
+
+# ── Tests tier EXTREMO: Supervisor + Juez ────────────────────────────────────
+
+
+def test_supervisor_devuelve_tres_versiones(load_fixture, mock_claude_p):
+    hallazgos = ResultadoEstadista.model_validate(load_fixture("hallazgos.json"))
+    recomendacion = RecomendacionAgricola.model_validate(load_fixture("recomendacion_agricola.json"))
+    boletin = Boletin.model_validate(load_fixture("boletin.json"))
+
+    resultado = ejecutar_supervisor(
+        hallazgos=hallazgos,
+        recomendacion=recomendacion,
+        boletin=boletin,
+        claude_fn=mock_claude_p,
+    )
+
+    assert isinstance(resultado, SupervisorMultiAudiencia)
+    assert resultado.tipo == "supervisor_multiaudiencia"
+    assert hasattr(resultado.contenido, "version_gobierno")
+    assert hasattr(resultado.contenido, "version_medios")
+    assert hasattr(resultado.contenido, "version_agricultores")
+
+
+def test_supervisor_cada_version_cumple_schema(load_fixture, mock_claude_p):
+    hallazgos = ResultadoEstadista.model_validate(load_fixture("hallazgos.json"))
+    recomendacion = RecomendacionAgricola.model_validate(load_fixture("recomendacion_agricola.json"))
+    boletin = Boletin.model_validate(load_fixture("boletin.json"))
+
+    resultado = ejecutar_supervisor(
+        hallazgos=hallazgos,
+        recomendacion=recomendacion,
+        boletin=boletin,
+        claude_fn=mock_claude_p,
+    )
+
+    gov = resultado.contenido.version_gobierno
+    assert gov.texto
+    assert gov.formato == "markdown"
+
+    medios = resultado.contenido.version_medios
+    assert medios.titular
+    assert medios.texto
+    assert medios.formato == "texto"
+
+    agri = resultado.contenido.version_agricultores
+    assert agri.texto
+    assert agri.formato == "texto_corto"
+
+
+def test_supervisor_usa_prompt_y_schema_propios(load_fixture, mock_claude_p):
+    from backend.agents.supervisor import SYSTEM_PROMPT as SUPERVISOR_PROMPT
+
+    hallazgos = ResultadoEstadista.model_validate(load_fixture("hallazgos.json"))
+    recomendacion = RecomendacionAgricola.model_validate(load_fixture("recomendacion_agricola.json"))
+    boletin = Boletin.model_validate(load_fixture("boletin.json"))
+
+    ejecutar_supervisor(
+        hallazgos=hallazgos,
+        recomendacion=recomendacion,
+        boletin=boletin,
+        claude_fn=mock_claude_p,
+    )
+
+    assert mock_claude_p.calls[-1]["system"] == SUPERVISOR_PROMPT
+    assert mock_claude_p.calls[-1]["schema"]["title"] == "SupervisorMultiAudiencia"
+
+
+def test_juez_devuelve_score_por_version(load_fixture, mock_claude_p):
+    texto = "Nivel de presas en 50.8%, tendencia descendente."
+
+    resultado = agente_juez(
+        texto=texto,
+        audiencia="gobierno",
+        claude_fn=mock_claude_p,
+    )
+
+    assert isinstance(resultado, dict)
+    assert resultado["audiencia"] == "gobierno"
+    assert set(resultado["scores"].keys()) == {"claridad", "tono_apropiado", "accionabilidad", "concision"}
+    for score in resultado["scores"].values():
+        assert 1 <= score <= 5
+    assert isinstance(resultado["promedio"], float)
+
+
+def test_juez_no_se_ejecuta_si_no_hay_versiones(load_fixture, mock_claude_p):
+    from backend.agents.juez import evaluar_calidad
+
+    resultado = evaluar_calidad(
+        versiones=None,
+        claude_fn=mock_claude_p,
+    )
+
+    assert resultado is None
+    assert len(mock_claude_p.calls) == 0
 

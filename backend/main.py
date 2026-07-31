@@ -449,6 +449,43 @@ def siembra_recomendada(
     return {"semana": semana, **{k: recomendacion[k] for k in _CAMPOS_RECOMENDACION if k in recomendacion}}
 
 
+def require_gobierno_o_ayuntamiento(usuario: UsuarioActual = Depends(get_current_user)) -> UsuarioActual:
+    if usuario.rol not in ["gobierno", "ayuntamiento"]:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN, f"Rol {usuario.rol} no tiene permiso para esta acción"
+        )
+    return usuario
+
+@app.get("/api/plan-accion/{semana}")
+def obtener_plan_accion(
+    semana: int,
+    usuario: UsuarioActual = Depends(require_gobierno_o_ayuntamiento),
+    db: Client = Depends(get_db_public),
+) -> list[dict[str, Any]]:
+    boletin = _ultimo_boletin_de_semana(db, "boletines", semana)
+    if boletin is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, f"No hay boletín para la semana {semana}")
+        
+    boletin_id = boletin["id"]
+    nivel_alerta = boletin.get("nivel_alerta_global", "verde")
+    
+    respuesta = db.table("planes_accion_generados").select("plan_json").eq("boletin_id", boletin_id).execute()
+    if respuesta.data:
+        return respuesta.data[0]["plan_json"]
+        
+    from backend.mcp_tools.plan_accion import generar_plan_accion
+    plan = generar_plan_accion(nivel_alerta)
+    
+    try:
+        service_db = _service_client()
+        service_db.table("planes_accion_generados").insert(
+            {"boletin_id": boletin_id, "plan_json": plan}
+        ).execute()
+    except Exception:
+        pass
+    
+    return plan
+
 # ── Frontend estático (modo local, un solo puerto — ver run.sh) ────────────
 
 

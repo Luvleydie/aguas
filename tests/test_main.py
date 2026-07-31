@@ -32,6 +32,7 @@ def api(monkeypatch):
     main.app.dependency_overrides[main.get_db_gobierno] = lambda: fake_db
     main.app.dependency_overrides[main.get_db_ayuntamiento] = lambda: fake_db
     main.app.dependency_overrides[main.get_db_agricultor] = lambda: fake_db
+    monkeypatch.setattr(main, "_service_client", lambda: fake_db)
 
     def _set_usuario(usuario):
         estado["usuario"] = usuario
@@ -409,3 +410,84 @@ def test_siembra_sin_recomendacion_da_404(api):
     respuesta = cliente.get("/api/siembra/43")
 
     assert respuesta.status_code == 404
+
+
+def test_cors_permite_origen_de_desarrollo_localhost_3000(api):
+    cliente, _, _ = api
+
+    respuesta = cliente.get("/api/boletin/historico", headers={"Origin": "http://localhost:3000"})
+
+    assert respuesta.headers.get("access-control-allow-origin") == "http://localhost:3000"
+
+
+def test_cors_responde_preflight_options(api):
+    cliente, _, _ = api
+
+    respuesta = cliente.options(
+        "/api/boletin/historico",
+        headers={
+            "Origin": "http://localhost:3000",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+
+    assert respuesta.status_code == 200
+    assert respuesta.headers.get("access-control-allow-origin") == "http://localhost:3000"
+
+# ── GET /api/plan-accion/{semana} ────────────────────────────────────────────
+
+@pytest.mark.red
+def test_plan_accion_requiere_gobierno_o_ayuntamiento(api):
+    cliente, _fake_db, set_usuario = api
+    set_usuario(_usuario("agricultor"))
+    respuesta = cliente.get("/api/plan-accion/42")
+    assert respuesta.status_code == 403
+
+    set_usuario(_usuario("medios"))
+    respuesta = cliente.get("/api/plan-accion/42")
+    assert respuesta.status_code == 403
+
+@pytest.mark.red
+def test_plan_accion_404_si_no_hay_boletin(api):
+    cliente, fake_db, set_usuario = api
+    set_usuario(_usuario("ayuntamiento"))
+    respuesta = cliente.get("/api/plan-accion/99")
+    assert respuesta.status_code == 404
+
+@pytest.mark.red
+def test_plan_accion_genera_y_guarda(api, monkeypatch):
+    cliente, fake_db, set_usuario = api
+    set_usuario(_usuario("ayuntamiento"))
+    fake_db.store["boletines"] = [{"id": "b1", "semana": 42, "nivel_alerta_global": "rojo"}]
+    fake_db.store["planes_accion_generados"] = []
+
+    def mock_generar_plan_accion(nivel):
+        return [{"id": 1, "accion": "Test", "nivel_alerta": nivel, "prioridad": 1}]
+
+    from backend.mcp_tools import plan_accion
+    monkeypatch.setattr(plan_accion, "generar_plan_accion", mock_generar_plan_accion)
+
+    respuesta = cliente.get("/api/plan-accion/42")
+    assert respuesta.status_code == 200
+    datos = respuesta.json()
+    assert len(datos) == 1
+    assert datos[0]["accion"] == "Test"
+
+    # Verificar auditoría
+    assert len(fake_db.store["planes_accion_generados"]) == 1
+    assert fake_db.store["planes_accion_generados"][0]["boletin_id"] == "b1"
+
+@pytest.mark.red
+def test_plan_accion_retorna_cache(api):
+    cliente, fake_db, set_usuario = api
+    set_usuario(_usuario("gobierno"))
+    fake_db.store["boletines"] = [{"id": "b1", "semana": 42, "nivel_alerta_global": "rojo"}]
+    fake_db.store["planes_accion_generados"] = [
+        {"id": "p1", "boletin_id": "b1", "plan_json": [{"id": 2, "accion": "Cache", "prioridad": 1}]}
+    ]
+
+    respuesta = cliente.get("/api/plan-accion/42")
+    assert respuesta.status_code == 200
+    datos = respuesta.json()
+    assert len(datos) == 1
+    assert datos[0]["accion"] == "Cache"

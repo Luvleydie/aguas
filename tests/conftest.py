@@ -25,6 +25,8 @@ class FakeClaudeP:
             "ResultadoEstadista": _read_json("hallazgos.json"),
             "Boletin": _read_json("boletin.json"),
             "RecomendacionAgricola": _read_json("recomendacion_agricola.json"),
+            "SupervisorMultiAudiencia": _read_json("supervisor.json"),
+            "EvaluacionCalidad": _read_json("juez_gobierno.json"),
         }
 
     def __call__(

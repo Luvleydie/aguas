@@ -1,0 +1,11 @@
+{
+  "audiencia": "gobierno",
+  "scores": {
+    "claridad": 5,
+    "tono_apropiado": 5,
+    "accionabilidad": 4,
+    "concision": 5
+  },
+  "promedio": 4.75,
+  "justificacion_breve": ""
+}

@@ -1,0 +1,18 @@
+{
+  "tipo": "supervisor_multiaudiencia",
+  "contenido": {
+    "version_gobierno": {
+      "texto": "## Estado de presas\nPromedio ponderado: 50.8%. Tendencia: ▃▃▂▂▂▁▁.\n\n## Precipitación\nAcumulado medio mensual: 53.7 mm. Tendencia: ▁▂▅█▆▃▂.\n\n## Temperatura\nTemperatura máxima promedio: 26.3°C (▅▆▃▂▂▁▃).\n\n## Alerta y recomendación\nNivel global AMARILLO. Activar plan de racionamiento nivel 2.",
+      "formato": "markdown"
+    },
+    "version_medios": {
+      "titular": "Presas de Durango en nivel amarillo: recomiendan racionamiento",
+      "texto": "El nivel promedio de las presas del Valle del Guadiana se sitúa en 50.8%, con una tendencia descendente de 2.4 puntos respecto al mes anterior. La precipitación acumulada de 53.7 mm se mantiene en rango de alerta. Las autoridades recomiendan activar el plan de racionamiento nivel 2.",
+      "formato": "texto"
+    },
+    "version_agricultores": {
+      "texto": "🌾 Alerta: nivel bajo en las presas. Se recomienda posponer la siembra 2 semanas.",
+      "formato": "texto_corto"
+    }
+  }
+}

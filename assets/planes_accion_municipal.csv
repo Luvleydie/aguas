@@ -1,0 +1,18 @@
+﻿id,nivel_alerta,categoria,accion,descripcion,plazo_implementacion_dias,costo_estimado,area_responsable,prioridad
+1,verde,comunicacion,Boletín informativo mensual,Publicación mensual de niveles de presas y mantos acuíferos del Valle del Guadiana.,5,bajo,Comunicación Social,3
+2,verde,coordinacion_interinstitucional,Mesa de monitoreo AMD-CONAGUA,Instalación de mesa técnica para seguimiento mensual de precipitaciones.,7,bajo,Aguas del Municipio de Durango (AMD),3
+3,verde,infraestructura,Revisión de pozos principales,Inspección preventiva del estado electromecánico de la red de pozos.,30,medio,Aguas del Municipio de Durango (AMD),2
+4,verde,campaña_ahorro,Tips de ahorro en redes,Publicación semanal de consejos para el cuidado del agua en el hogar.,2,bajo,Comunicación Social,3
+5,amarillo,campaña_ahorro,Campaña Agua para Mañana,Lanzamiento de campaña intensiva en medios locales para promover ahorro voluntario.,15,medio,Comunicación Social,2
+6,amarillo,infraestructura,Detección de fugas en zona centro,Despliegue de cuadrillas especiales para identificar y reparar fugas no visibles.,45,alto,Aguas del Municipio de Durango (AMD),2
+7,amarillo,coordinacion_interinstitucional,Aviso a grandes consumidores,Notificación a sector industrial y comercial para preparar planes de reducción de consumo.,10,bajo,Medio Ambiente Municipal,2
+8,amarillo,comunicacion,Reporte quincenal de sequía,Aumento en la frecuencia de reportes ciudadanos sobre el nivel de estrés hídrico.,3,bajo,Comunicación Social,2
+9,naranja,racionamiento,Reducción de presión nocturna,Disminución de presión en la red de distribución de 11 PM a 4 AM para reducir fugas.,3,medio,Aguas del Municipio de Durango (AMD),1
+10,naranja,racionamiento,Restricción de riego de parques,Prohibición temporal de riego en áreas verdes municipales con agua potable (uso exclusivo de agua tratada).,2,bajo,Servicios Públicos,1
+11,naranja,infraestructura,Habilitación de pozos de reserva,Puesta en marcha de pozos inactivos o de bajo aforo para compensar la demanda de agua.,20,alto,Aguas del Municipio de Durango (AMD),1
+12,naranja,coordinacion_interinstitucional,Solicitud de declaratoria preventiva,Gestión ante CONAGUA y Protección Civil Estatal para asegurar recursos y fondos de apoyo.,15,bajo,Protección Civil,2
+13,rojo,racionamiento,Tandeo por sectores (48h),"Suministro intermitente alternando días entre las zonas oriente, poniente, norte y sur de la ciudad.",2,bajo,Aguas del Municipio de Durango (AMD),1
+14,rojo,racionamiento,Suspensión de lavacoches comerciales,Clausura temporal de negocios de alto consumo no esencial (autolavados) hasta nuevo aviso.,3,bajo,Juzgado Administrativo,1
+15,rojo,coordinacion_interinstitucional,Plan de pipas de emergencia,Coordinación operativa con el Estado para distribución de agua en pipas en colonias marginadas.,5,medio,Protección Civil,1
+16,rojo,infraestructura,Perforación de emergencia,Perforación urgente de pozos profundos adicionales en la cuenca del Valle del Guadiana.,90,alto,Aguas del Municipio de Durango (AMD),1
+17,rojo,comunicacion,Alarma roja de escasez,Boletines de emergencia diarios y masivos sobre horarios de servicio y puntos de abastecimiento.,1,bajo,Presidencia Municipal,1

@@ -178,10 +178,49 @@ class RecomendacionAgricola(ContractModel):
         return value
 
 
+class VersionGobierno(ContractModel):
+    texto: str = Field(min_length=1)
+    formato: Literal["markdown"] = "markdown"
+
+
+class VersionMedios(ContractModel):
+    titular: str = Field(min_length=1)
+    texto: str = Field(min_length=1)
+    formato: Literal["texto"] = "texto"
+
+
+class VersionAgricultores(ContractModel):
+    texto: str = Field(min_length=1)
+    formato: Literal["texto_corto"] = "texto_corto"
+
+
+class SupervisorContenido(ContractModel):
+    version_gobierno: VersionGobierno
+    version_medios: VersionMedios
+    version_agricultores: VersionAgricultores
+
+
+class SupervisorMultiAudiencia(ContractModel):
+    """Salida JSON propia del agente Supervisor (tier EXTREMO)."""
+
+    tipo: Literal["supervisor_multiaudiencia"] = "supervisor_multiaudiencia"
+    contenido: SupervisorContenido
+
+
+class EvaluacionCalidad(ContractModel):
+    """Resultado del juez LLM-as-judge para una versión del boletín."""
+
+    audiencia: Literal["gobierno", "medios", "agricultores"]
+    scores: dict[str, int]
+    promedio: float
+    justificacion_breve: str = ""
+
+
 AGENT_SCHEMAS: dict[str, dict[str, JsonValue]] = {
     "explorador": PlanAnalisis.model_json_schema(),
     "estadista": ResultadoEstadista.model_json_schema(),
     "narrador": Boletin.model_json_schema(),
     "agronomo": RecomendacionAgricola.model_json_schema(),
+    "supervisor": SupervisorMultiAudiencia.model_json_schema(),
 }
 
