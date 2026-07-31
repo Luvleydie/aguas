@@ -8,19 +8,18 @@ const tabs = [
 ]
 
 describe("TabsLayout", () => {
-  it("la franja de color queda de borde a borde, pero el contenido queda en una columna mas angosta (max-w-2xl) para no verse desbalanceado", () => {
+  it("el header es una tarjeta redondeada y centrada, no una franja de borde a borde", () => {
     render(
       <TabsLayout tabs={tabs} active="inicio" onSelect={() => {}} roleName="Ayuntamiento de Durango" onLogout={() => {}}>
         <p>contenido</p>
       </TabsLayout>,
     )
 
-    const filaSuperior = screen.getByText("Ayuntamiento de Durango").closest("div.mx-auto")
-    expect(filaSuperior).toHaveClass("max-w-2xl")
-    expect(filaSuperior).not.toHaveClass("max-w-4xl")
+    const header = screen.getByText("Ayuntamiento de Durango").closest("header")
+    expect(header).toHaveClass("rounded-3xl")
 
-    const nav = screen.getByRole("navigation")
-    expect(nav).toHaveClass("max-w-2xl")
+    const wrapper = header?.parentElement
+    expect(wrapper).toHaveClass("mx-auto", "max-w-2xl")
 
     const main = screen.getByText("contenido").closest("main")
     expect(main).toHaveClass("max-w-2xl")
