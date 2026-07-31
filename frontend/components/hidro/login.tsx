@@ -7,18 +7,10 @@ import { Logo } from "@/components/hidro/logo"
 import { Button } from "@/components/ui/button"
 import { type UserProfile, register } from "@/lib/api-client"
 
-const roles = [
-  { id: "gobierno", nombre: "Gobierno del Estado" },
-  { id: "ayuntamiento", nombre: "Ayuntamiento" },
-  { id: "medios", nombre: "Medios" },
-  { id: "agricultor", nombre: "Agricultor" },
-]
-
 export function Login({ onLogin }: { onLogin: (email: string, password: string) => Promise<UserProfile> }) {
   const [mode, setMode] = useState<"login" | "register">("login")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [rol, setRol] = useState("gobierno")
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -30,7 +22,7 @@ export function Login({ onLogin }: { onLogin: (email: string, password: string) 
     setLoading(true)
     try {
       if (mode === "register") {
-        await register(email, password, rol)
+        await register(email, password)
         setSuccess("Usuario registrado. Ahora puedes iniciar sesión.")
         setMode("login")
       } else {
@@ -91,21 +83,9 @@ export function Login({ onLogin }: { onLogin: (email: string, password: string) 
           </div>
 
           {mode === "register" && (
-            <div className="space-y-2">
-              <label htmlFor="rol" className="text-base font-semibold text-foreground">
-                Tipo de cuenta
-              </label>
-              <select
-                id="rol"
-                value={rol}
-                onChange={(e) => setRol(e.target.value)}
-                className="h-14 w-full rounded-2xl border border-input bg-background px-4 text-lg text-foreground outline-none focus:border-ring focus:ring-3 focus:ring-ring/40"
-              >
-                {roles.map((r) => (
-                  <option key={r.id} value={r.id}>{r.nombre}</option>
-                ))}
-              </select>
-            </div>
+            <p className="text-sm text-muted-foreground text-center">
+              Tu rol se asigna según tu correo: <strong>@durango.gob.mx</strong> (Gobierno), <strong>@ayuntamiento.com</strong> (Ayuntamiento), <strong>@prensa.com</strong> (Medios), <strong>@gmail.com</strong> (Agricultor)
+            </p>
           )}
 
           {error && (
@@ -117,8 +97,7 @@ export function Login({ onLogin }: { onLogin: (email: string, password: string) 
           )}
 
           <Button type="submit" disabled={loading} className="h-14 w-full text-lg font-semibold">
-            {loading ? <Loader2 size={22} className="animate-spin" /> : mode === "register" ? <UserPlus size={22} /> : "Iniciar sesión"}
-            {loading ? "Procesando..." : mode === "register" ? "Registrarse" : "Iniciar sesión"}
+            {loading ? <Loader2 size={22} className="animate-spin" /> : mode === "register" ? <><UserPlus size={22} /> Registrarse</> : "Iniciar sesión"}
           </Button>
         </form>
 

@@ -20,6 +20,7 @@ from typing import Any
 import httpx
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, Header, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, EmailStr, Field
 from supabase import Client, create_client
@@ -39,6 +40,14 @@ LOG_PATH = Path(os.environ.get("HIDROALERTA_LOG_PATH", "log_agentes.jsonl"))
 
 app = FastAPI(title="HidroAlerta API")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # ── Modelos de request ──────────────────────────────────────────────────────
 
@@ -51,7 +60,17 @@ class LoginRequest(BaseModel):
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: str = Field(min_length=6)
-    rol: str = Field(default="agricultor")
+
+
+def _rol_desde_email(email: str) -> str:
+    dominio = email.rsplit("@", 1)[-1].lower() if "@" in email else ""
+    if dominio == "durango.gob.mx":
+        return "gobierno"
+    if dominio == "ayuntamiento.com":
+        return "ayuntamiento"
+    if dominio == "prensa.com":
+        return "medios"
+    return "agricultor"
 
 
 class GenerarBoletinRequest(BaseModel):
@@ -232,6 +251,7 @@ def auth_me(usuario: UsuarioActual = Depends(get_current_user)) -> dict[str, Any
 
 @app.post("/api/auth/register")
 def register(body: RegisterRequest) -> dict[str, Any]:
+    rol = _rol_desde_email(body.email)
     cliente = _anon_client()
     try:
         resultado = cliente.auth.sign_up({
@@ -248,13 +268,13 @@ def register(body: RegisterRequest) -> dict[str, Any]:
     service.table("usuarios").insert({
         "auth_user_id": resultado.user.id,
         "email": body.email,
-        "rol": body.rol,
+        "rol": rol,
     }).execute()
 
     return {
         "id": resultado.user.id,
         "email": resultado.user.email,
-        "rol": body.rol,
+        "rol": rol,
     }
 
 
