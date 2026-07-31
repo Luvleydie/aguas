@@ -14,19 +14,25 @@ export interface Hallazgo {
 }
 
 /**
- * Forma real de un boletín ya publicado/consultable: el contrato Boletin del
- * Narrador (semana, nivel_alerta_global -> nivel, markdown) más los campos
- * que agrega la fila de Supabase (`fecha`, `publicado`) y los hallazgos del
- * Estadista para el panel de datos crudos.
+ * Forma real de una fila de la tabla `boletines` (ver
+ * backend/db/migrations/0001_init_schema.sql): el contrato Boletin del
+ * Narrador (nivel_alerta_global -> nivel, markdown) más los campos que
+ * agrega la fila de Supabase. No existe una columna `fecha` — la fecha se
+ * deriva de `semana`+`anio` en la UI. `hallazgos` solo llega para el rol
+ * gobierno (tabla `boletines` completa); el resto de roles lee la vista
+ * `boletines_publico`, que no expone hallazgos_json/recomendacion_agricola_json.
  */
 export interface BoletinReal {
+  id: string
   semana: number
-  fecha: string
+  anio: number
   publicado: boolean
+  createdAt: string
+  publishedAt: string | null
   nivel: Nivel
   markdown: string
   recomendacion: string
-  hallazgos: Hallazgo[]
+  hallazgos?: Hallazgo[]
 }
 
 export interface SeccionesBoletin {

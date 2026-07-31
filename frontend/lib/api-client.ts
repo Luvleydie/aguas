@@ -1,0 +1,52 @@
+export class ApiError extends Error {
+  status: number
+  detail: string
+
+  constructor(status: number, detail: string) {
+    super(detail)
+    this.name = "ApiError"
+    this.status = status
+    this.detail = detail
+  }
+}
+
+export interface ApiFetchOptions {
+  method?: "GET" | "POST" | "PUT" | "DELETE"
+  token?: string
+  body?: unknown
+}
+
+/**
+ * En producción el frontend se sirve desde el mismo proceso/puerto que la
+ * API (ver backend/main.py, run.sh), así que NEXT_PUBLIC_API_URL queda
+ * vacío y las rutas son relativas. En desarrollo (`next dev`) se apunta a
+ * `http://localhost:8000` mientras Persona A no agregue CORS.
+ */
+export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
+  const { method = "GET", token, body } = options
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? ""
+
+  const headers: Record<string, string> = {}
+  if (body !== undefined) headers["Content-Type"] = "application/json"
+  if (token) headers.Authorization = `Bearer ${token}`
+
+  const response = await fetch(`${baseUrl}${path}`, {
+    method,
+    headers,
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  })
+
+  if (!response.ok) {
+    let detail = response.statusText
+    try {
+      const cuerpo = await response.json()
+      if (cuerpo && typeof cuerpo.detail === "string") detail = cuerpo.detail
+    } catch {
+      // sin cuerpo JSON: se usa statusText
+    }
+    throw new ApiError(response.status, detail)
+  }
+
+  if (response.status === 204) return undefined as T
+  return (await response.json()) as T
+}

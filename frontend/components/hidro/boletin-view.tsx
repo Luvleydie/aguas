@@ -51,7 +51,7 @@ export function BoletinView({
           <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             Boletín · Semana {boletin.semana}
           </p>
-          <h2 className="text-2xl font-bold text-foreground sm:text-3xl">{boletin.fecha}</h2>
+          <h2 className="text-2xl font-bold text-foreground sm:text-3xl">Año {boletin.anio}</h2>
           <div className="pt-1">
             <NivelBadge nivel={boletin.nivel} />
           </div>
@@ -76,36 +76,38 @@ export function BoletinView({
         })}
       </div>
 
-      <div className="overflow-hidden rounded-3xl bg-card shadow-sm">
-        <button
-          type="button"
-          onClick={() => setRawOpen((o) => !o)}
-          className="flex w-full items-center justify-between p-6 text-left text-lg font-semibold text-foreground hover:bg-muted/40"
-          aria-expanded={rawOpen}
-        >
-          Ver datos crudos
-          <ChevronDown size={22} className={cn("transition-transform", rawOpen && "rotate-180")} aria-hidden />
-        </button>
-        {rawOpen && (
-          <div className="border-t border-border px-6 pb-6 pt-2">
-            <dl className="divide-y divide-border">
-              {boletin.hallazgos.map((h) => (
-                <div key={h.id} className="flex items-center justify-between gap-4 py-3">
-                  <dt className="text-base text-muted-foreground">{h.contexto}</dt>
-                  <dd className="flex items-center gap-3 text-base font-semibold text-foreground">
-                    <span aria-hidden className="font-mono text-muted-foreground">
-                      {h.sparkline}
-                    </span>
-                    <span>
-                      {h.valor} {h.unidad}
-                    </span>
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        )}
-      </div>
+      {boletin.hallazgos && (
+        <div className="overflow-hidden rounded-3xl bg-card shadow-sm">
+          <button
+            type="button"
+            onClick={() => setRawOpen((o) => !o)}
+            className="flex w-full items-center justify-between p-6 text-left text-lg font-semibold text-foreground hover:bg-muted/40"
+            aria-expanded={rawOpen}
+          >
+            Ver datos crudos
+            <ChevronDown size={22} className={cn("transition-transform", rawOpen && "rotate-180")} aria-hidden />
+          </button>
+          {rawOpen && (
+            <div className="border-t border-border px-6 pb-6 pt-2">
+              <dl className="divide-y divide-border">
+                {boletin.hallazgos.map((h) => (
+                  <div key={h.id} className="flex items-center justify-between gap-4 py-3">
+                    <dt className="text-base text-muted-foreground">{h.contexto}</dt>
+                    <dd className="flex items-center gap-3 text-base font-semibold text-foreground">
+                      <span aria-hidden className="font-mono text-muted-foreground">
+                        {h.sparkline}
+                      </span>
+                      <span>
+                        {h.valor} {h.unidad}
+                      </span>
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          )}
+        </div>
+      )}
 
       {showPublish && (
         <div className="flex flex-col items-start gap-3 rounded-3xl bg-card p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">

@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { BoletinView } from "./boletin-view"
 import { boletinActualReal } from "@/lib/boletin-real-mock"
+import type { BoletinReal } from "@/lib/boletin-adapter"
 
 describe("BoletinView (contrato real: markdown + hallazgos)", () => {
   it("renderiza las 4 secciones fijas parseadas del markdown del Narrador", () => {
@@ -16,9 +17,10 @@ describe("BoletinView (contrato real: markdown + hallazgos)", () => {
     expect(screen.getByText(/53\.7 mm/)).toBeInTheDocument()
   })
 
-  it("muestra la semana y el semáforo en el nivel del boletín", () => {
+  it("muestra la semana, el año (no hay columna fecha en el schema real) y el semáforo", () => {
     render(<BoletinView boletin={boletinActualReal} />)
     expect(screen.getByText(/Semana 42/)).toBeInTheDocument()
+    expect(screen.getByText(/2024/)).toBeInTheDocument()
     expect(screen.getByRole("img", { name: /Nivel de alerta: Precaución/ })).toBeInTheDocument()
   })
 
@@ -28,10 +30,16 @@ describe("BoletinView (contrato real: markdown + hallazgos)", () => {
 
     await user.click(screen.getByRole("button", { name: /ver datos crudos/i }))
 
-    for (const h of boletinActualReal.hallazgos) {
+    for (const h of boletinActualReal.hallazgos ?? []) {
       expect(screen.getByText(h.contexto)).toBeInTheDocument()
       expect(screen.getByText(h.sparkline)).toBeInTheDocument()
     }
+  })
+
+  it("sin hallazgos (roles distintos de gobierno leen boletines_publico, sin hallazgos_json), no muestra el panel de datos crudos", () => {
+    const boletinSinHallazgos: BoletinReal = { ...boletinActualReal, hallazgos: undefined }
+    render(<BoletinView boletin={boletinSinHallazgos} />)
+    expect(screen.queryByRole("button", { name: /ver datos crudos/i })).toBeNull()
   })
 
   it("con showPublish, el botón publica y refleja boletin.publicado", async () => {

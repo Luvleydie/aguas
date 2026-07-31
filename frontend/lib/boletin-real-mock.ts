@@ -7,9 +7,12 @@ import type { BoletinReal } from "@/lib/boletin-adapter"
  * vez que Persona A publique el endpoint (ver Paso 8 del plan).
  */
 export const boletinActualReal: BoletinReal = {
+  id: "bol-mock-42",
   semana: 42,
-  fecha: "14 – 20 oct 2024",
+  anio: 2024,
   publicado: false,
+  createdAt: "2024-10-20T08:00:00Z",
+  publishedAt: null,
   nivel: "amarillo",
   markdown:
     "# Boletín HidroAlerta · Semana 42\n\n## 1 · Estado de presas\n\nPromedio ponderado: **50.8 %**. Tendencia: `▃▃▂▂▂▁▁`.\n\n## 2 · Precipitación\n\nAcumulado medio mensual: **53.7 mm**. Tendencia: `▁▂▅█▆▃▂`.\n\n## 3 · Temperatura\n\nTemperatura máxima promedio: **26.3 °C** (`▅▆▃▂▂▁▃`).\n\n## 4 · Alerta y recomendación\n\nNivel global **AMARILLO**. Recomendación: activar vigilancia y campaña preventiva de ahorro.",
