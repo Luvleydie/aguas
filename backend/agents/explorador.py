@@ -5,7 +5,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from backend.claude_client import ClaudeP, claude_p
+from backend.claude_client import ClaudeP
+from backend.llm_client import llm_p
 from backend.contracts import PlanAnalisis
 
 
@@ -21,11 +22,13 @@ Existen 3 fuentes de datos:
 - temperatura_regional.csv: temperatura máx/mín diaria por región (capital, comarca lagunera, sierra).
 
 TAREA:
-Dado un rango de semana/fecha objetivo, define un plan de análisis que cubra:
-1. Nivel actual de las presas (promedio del período).
-2. Precipitación acumulada del mes.
-3. Cambio respecto al mes/período anterior (tendencia).
-4. Temperatura máxima promedio del período.
+Dado un rango de semana/fecha objetivo, define un plan de análisis que cubra
+EXACTAMENTE estas 4 preguntas (una tool cada una, sin variantes ni preguntas
+adicionales — el Estadista solo reconoce estas 4 métricas):
+1. Nivel actual de las presas: calc_stats sobre csv_name="presas", columna="nivel_pct".
+2. Precipitación acumulada del mes: calc_stats sobre csv_name="precipitacion", columna="precipitacion_mm".
+3. Cambio del NIVEL DE PRESAS respecto al mes anterior (NO de precipitación ni temperatura): compare_periods sobre csv_name="presas", columna="nivel_pct".
+4. Temperatura máxima promedio del período: calc_stats sobre csv_name="temperatura", columna="tmax_c".
 
 Cada pregunta debe mapear a UNA de estas tools disponibles para el Estadista:
 describe, filter_by_date, calc_stats, compare_periods, plot_ascii.
@@ -36,8 +39,8 @@ FORMATO DE SALIDA — responde ÚNICAMENTE este JSON, sin texto adicional:
   "contenido": {
     "ventana": {"desde": "YYYY-MM-DD", "hasta": "YYYY-MM-DD"},
     "preguntas": [
-      {"id": "q1", "tool": "calc_stats", "args": {"csv": "presas", "col": "nivel_pct", "agrupacion": "mensual"}},
-      {"id": "q2", "tool": "compare_periods", "args": {"csv": "presas", "periodo_a": "...", "periodo_b": "..."}}
+      {"id": "q1", "tool": "calc_stats", "args": {"csv_name": "presas", "columna": "nivel_pct", "agrupacion": "presa"}},
+      {"id": "q2", "tool": "compare_periods", "args": {"csv_name": "presas", "columna": "nivel_pct", "periodo_a": ["YYYY-MM-DD", "YYYY-MM-DD"], "periodo_b": ["YYYY-MM-DD", "YYYY-MM-DD"]}}
     ]
   }
 }
@@ -46,13 +49,18 @@ REGLAS:
 - No agregues preguntas fuera del alcance de las 4 métricas listadas.
 - No calcules nada tú mismo, solo planeas.
 - Si la ventana de fechas no viene especificada, usa las últimas 4 semanas disponibles en los datos.
+- "agrupacion" es OPCIONAL y, si se usa, debe ser el nombre EXACTO de una
+  columna categórica que exista en ese CSV según las ``descripciones``
+  recibidas (p. ej. "presa", "estacion", "region") — nunca una granularidad
+  temporal como "mensual" o "semanal"; para eso usa "desde"/"hasta". Si no
+  necesitas agrupar por columna, omite el campo.
 """.strip()
 
 
 def ejecutar_explorador(
     descripciones: dict[str, Any],
     semana: int,
-    claude_fn: ClaudeP = claude_p,
+    claude_fn: ClaudeP = llm_p,
 ) -> PlanAnalisis:
     prompt = json.dumps({"descripciones": descripciones, "semana": semana}, ensure_ascii=False)
     bruto = claude_fn(prompt, system=SYSTEM_PROMPT, schema=PlanAnalisis.model_json_schema())

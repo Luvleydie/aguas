@@ -5,7 +5,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from backend.claude_client import ClaudeP, claude_p
+from backend.claude_client import ClaudeP
+from backend.llm_client import llm_p
 from backend.contracts import RecomendacionAgricola, ResultadoEstadista
 
 
@@ -45,7 +46,7 @@ def ejecutar_agronomo(
     hallazgos: ResultadoEstadista,
     calendario_cultivos: dict[str, Any],
     semana: int,
-    claude_fn: ClaudeP = claude_p,
+    claude_fn: ClaudeP = llm_p,
 ) -> RecomendacionAgricola:
     prompt = json.dumps(
         {

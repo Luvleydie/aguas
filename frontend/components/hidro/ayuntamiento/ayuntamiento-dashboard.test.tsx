@@ -20,9 +20,24 @@ const boletinMock = {
   publicado: false,
 }
 
+const planMock = [
+  {
+    id: 1,
+    accion: "Monitoreo de presas",
+    descripcion: "Verificar niveles semanalmente",
+    plazo: "1 semana",
+    costo: "bajo",
+    area_responsable: "Comisión Estatal del Agua",
+    prioridad: 1,
+  },
+]
+
 beforeEach(() => {
   vi.clearAllMocks()
-  mockApiFetch.mockResolvedValue([boletinMock])
+  mockApiFetch.mockImplementation(async (path: string) => {
+    if (typeof path === "string" && path.startsWith("/api/plan-accion")) return planMock
+    return [boletinMock]
+  })
 })
 
 describe("AyuntamientoDashboard", () => {
@@ -34,10 +49,10 @@ describe("AyuntamientoDashboard", () => {
       expect(screen.getByText(/Semana 42/)).toBeInTheDocument()
     })
 
-    const boton = screen.getByRole("button", { name: /marcar acción tomada/i })
+    const boton = screen.getByRole("button", { name: /marcar como iniciada/i })
     await user.click(boton)
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /acción registrada/i })).toBeDisabled()
+      expect(screen.getByRole("button", { name: /iniciada/i })).toBeDisabled()
     })
   })
 

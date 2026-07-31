@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -22,6 +23,7 @@ from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, Header, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from postgrest.exceptions import APIError
 from pydantic import BaseModel, EmailStr, Field
 from supabase import Client, create_client
 
@@ -227,6 +229,60 @@ def _tabla_boletines_para(usuario: UsuarioActual | None) -> str:
 # ── Endpoints ────────────────────────────────────────────────────────────────
 
 
+@app.get("/api/auth/seed")
+def seed_users():
+    users_to_create = [
+        {"email": "gobierno@durango.gob.mx", "password": "Password123!", "role": "gobierno", "name": "Gobierno del Estado"},
+        {"email": "centro@ayuntamiento.com", "password": "Password123!", "role": "ayuntamiento", "name": "Ayuntamiento Centro"},
+        {"email": "noticias@prensa.com", "password": "Password123!", "role": "medios", "name": "Medios de Prensa"},
+        {"email": "juan@agricultor.com", "password": "Password123!", "role": "agricultor", "name": "Agricultor Juan"}
+    ]
+    resultados = []
+    
+    for u in users_to_create:
+        try:
+            # Crear clientes frescos para que no se contaminen entre iteraciones
+            service = _service_client()
+            anon = _anon_client()
+            auth_id = None
+            
+            # 1. Intentar crear en auth.users
+            try:
+                res = service.auth.admin.create_user({
+                    "email": u["email"],
+                    "password": u["password"],
+                    "email_confirm": True
+                })
+                auth_id = res.user.id
+                resultados.append(f"Auth creado: {u['email']}")
+            except Exception as e:
+                # Si ya existe, iniciamos sesión para obtener su ID usando el cliente anónimo
+                if "already" in str(e).lower() or "rate limit" in str(e).lower():
+                    login_res = anon.auth.sign_in_with_password({"email": u["email"], "password": u["password"]})
+                    auth_id = login_res.user.id
+                    resultados.append(f"Auth recuperado: {u['email']}")
+                else:
+                    raise e
+            
+            # 2. Insertar en public.usuarios solo si no existe usando el service_role (brinca RLS)
+            if auth_id:
+                check = service.table("usuarios").select("id").eq("email", u["email"]).execute()
+                if not check.data:
+                    service.table("usuarios").insert({
+                        "auth_user_id": auth_id,
+                        "email": u["email"],
+                        "rol": u["role"],
+                        "nombre": u["name"]
+                    }).execute()
+                    resultados.append(f"Perfil público insertado: {u['email']}")
+                else:
+                    resultados.append(f"Perfil público ya existía: {u['email']}")
+                    
+        except Exception as e:
+            resultados.append(f"Error en {u['email']}: {repr(e)}")
+            
+    return {"status": "ok", "detalles": resultados}
+
 @app.post("/api/auth/login")
 def login(body: LoginRequest) -> dict[str, Any]:
     cliente = _anon_client()
@@ -251,25 +307,68 @@ def auth_me(usuario: UsuarioActual = Depends(get_current_user)) -> dict[str, Any
 
 @app.post("/api/auth/register")
 def register(body: RegisterRequest) -> dict[str, Any]:
+    print(f">>> [REGISTRO] Intentando registrar: {body.email}")
     rol = _rol_desde_email(body.email)
+    print(f">>> [REGISTRO] Rol asignado: {rol}")
     cliente = _anon_client()
     try:
+        print(">>> [REGISTRO] Llamando a supabase.auth.sign_up...")
         resultado = cliente.auth.sign_up({
             "email": body.email,
             "password": body.password,
         })
+        print(f">>> [REGISTRO] Resultado sign_up: {resultado}")
     except Exception as exc:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, "No se pudo registrar el usuario") from exc
+        print(">>> [REGISTRO ERROR] Excepción en sign_up:", repr(exc))
+        if "rate limit" in str(exc).lower():
+            print(">>> [REGISTRO] Rate limit detectado. Usando Admin API para crear usuario...")
+            try:
+                service = _service_client()
+                service.auth.admin.create_user({
+                    "email": body.email,
+                    "password": body.password,
+                    "email_confirm": True
+                })
+                print(">>> [REGISTRO] Usuario creado por Admin API. Iniciando sesión...")
+                resultado = cliente.auth.sign_in_with_password({
+                    "email": body.email,
+                    "password": body.password,
+                })
+            except Exception as admin_exc:
+                print(">>> [REGISTRO ERROR] Fallo en Admin API:", repr(admin_exc))
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, "No se pudo registrar el usuario (Rate limit y Admin fallback fallaron)") from admin_exc
+        else:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "No se pudo registrar el usuario (error en Supabase)") from exc
 
-    if resultado.user is None:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, "No se pudo crear el usuario")
+    if not resultado or not resultado.user:
+        print(">>> [REGISTRO ERROR] No devolvió usuario")
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "No se pudo crear el usuario (resultado vacío)")
 
     service = _service_client()
-    service.table("usuarios").insert({
+    fila_usuario = {
         "auth_user_id": resultado.user.id,
         "email": body.email,
+        "nombre": body.email.split("@", 1)[0],
         "rol": rol,
-    }).execute()
+    }
+    # sign_up confirma antes de que la fila de auth.users sea visible para el
+    # chequeo de FK del insert siguiente (visto en producción: 23503
+    # "usuarios_auth_user_id_fkey" que desaparece si se reintenta ms después).
+    ultimo_error: Exception | None = None
+    for intento, espera in enumerate((0, 0.3, 0.8)):
+        if espera:
+            time.sleep(espera)
+        try:
+            service.table("usuarios").insert(fila_usuario).execute()
+            ultimo_error = None
+            break
+        except APIError as exc:
+            ultimo_error = exc
+            print(f">>> [REGISTRO] Insert usuarios intento {intento + 1} falló: {exc}")
+            if exc.code != "23503":
+                raise
+    if ultimo_error is not None:
+        raise ultimo_error
 
     return {
         "id": resultado.user.id,

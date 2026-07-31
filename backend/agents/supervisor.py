@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import json
 
-from backend.claude_client import ClaudeP, claude_p
+from backend.claude_client import ClaudeP
+from backend.llm_client import llm_p
 from backend.contracts import Boletin, RecomendacionAgricola, ResultadoEstadista, SupervisorMultiAudiencia
 
 
@@ -48,7 +49,7 @@ def ejecutar_supervisor(
     hallazgos: ResultadoEstadista,
     recomendacion: RecomendacionAgricola,
     boletin: Boletin,
-    claude_fn: ClaudeP = claude_p,
+    claude_fn: ClaudeP = llm_p,
 ) -> SupervisorMultiAudiencia:
     prompt = json.dumps(
         {

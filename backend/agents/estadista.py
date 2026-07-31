@@ -8,7 +8,8 @@ from typing import Any
 
 import pandas as pd
 
-from backend.claude_client import ClaudeP, claude_p
+from backend.claude_client import ClaudeP
+from backend.llm_client import llm_p
 from backend.contracts import (
     EvidenciaTool,
     Metrica,
@@ -31,12 +32,15 @@ _METRICA_A_CSV_COLUMNA: dict[Metrica, tuple[str, str]] = {
 SYSTEM_PROMPT = """
 Eres el Estadista del sistema HidroAlerta. Recibes un "plan_analisis" del Explorador y lo ejecutas usando ÚNICAMENTE las tools MCP reales disponibles. Nunca inventas ni estimas un número — todo valor que reportes debe venir de una tool ejecutada.
 
-TOOLS DISPONIBLES (ejecutan pandas real):
-- describe(csv_path) → resumen de columnas, tipos, nulos.
-- filter_by_date(csv, desde, hasta) → subconjunto por fechas.
-- calc_stats(csv, columna, agrupacion) → media, mediana, desv, min, max, tendencia (regresión lineal).
-- compare_periods(csv, periodo_a, periodo_b) → % de cambio absoluto y relativo.
+TOOLS DISPONIBLES (ejecutan pandas real; los nombres de argumento deben ser
+EXACTAMENTE estos, son los nombres reales de la función Python):
+- describe(csv_name) → resumen de columnas, tipos, nulos.
+- filter_by_date(csv_name, desde, hasta) → subconjunto por fechas.
+- calc_stats(csv_name, columna, agrupacion=None, desde=None, hasta=None) → media, mediana, desv, min, max.
+- compare_periods(csv_name, columna, periodo_a, periodo_b, agrupacion=None) → % de cambio absoluto y relativo.
 - plot_ascii(serie) → sparkline de texto.
+
+``csv_name`` es una de estas tres claves exactas: "presas", "precipitacion", "temperatura".
 
 TAREA:
 1. Por cada pregunta del plan_analisis, invoca la tool indicada con sus argumentos.
@@ -122,7 +126,7 @@ def _sparkline_real(
 def ejecutar_estadista(
     plan: PlanAnalisis,
     tools: Mapping[str, Callable[..., Any]],
-    claude_fn: ClaudeP = claude_p,
+    claude_fn: ClaudeP = llm_p,
 ) -> ResultadoEstadista:
     evidencias: dict[str, EvidenciaTool] = {}
     for pregunta in plan.preguntas:
@@ -137,10 +141,11 @@ def ejecutar_estadista(
             # ahora, no el código.
             continue
         tool_fn = tools[pregunta.tool.value]
-        resultado = tool_fn(**pregunta.args)
+        args_dict = pregunta.args.model_dump(exclude_none=True)
+        resultado = tool_fn(**args_dict)
         evidencias[pregunta.id] = EvidenciaTool(
             tool=pregunta.tool,
-            args=pregunta.args,
+            args=pregunta.args.model_dump(mode="json", exclude_none=True),
             resultado=_resultado_json_seguro(resultado),
         )
 

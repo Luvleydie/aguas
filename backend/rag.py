@@ -101,7 +101,12 @@ def contexto_historico(
 
     modelo = embedder if embedder is not None else _modelo_por_defecto()
     vectores = modelo.encode([texto_consulta, *[b.texto_para_similitud for b in corpus]])
-    vector_consulta, *vectores_corpus = (list(v) for v in vectores)
+    # .tolist() (no list()) para que cada elemento sea float nativo de Python,
+    # no numpy.float32 — de lo contrario json.dumps() truena más abajo en el
+    # Narrador al serializar el "similitud" calculado a partir de estos vectores.
+    vector_consulta, *vectores_corpus = (
+        v.tolist() if hasattr(v, "tolist") else list(v) for v in vectores
+    )
 
     similitudes = sorted(
         (

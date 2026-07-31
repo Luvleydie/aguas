@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import json
 
-from backend.claude_client import ClaudeP, claude_p
+from backend.claude_client import ClaudeP
+from backend.llm_client import llm_p
 from backend.contracts import Boletin, ResultadoEstadista
 
 
@@ -49,7 +50,7 @@ REGLAS:
 
 def ejecutar_narrador(
     resultado: ResultadoEstadista,
-    claude_fn: ClaudeP = claude_p,
+    claude_fn: ClaudeP = llm_p,
     contexto_historico: list[dict[str, object]] | None = None,
 ) -> Boletin:
     cuerpo: dict[str, object] = {"hallazgos": resultado.model_dump(mode="json")}

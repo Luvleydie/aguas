@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from datetime import date
 from enum import Enum
-from typing import Literal, Self
+from typing import Literal, Self, Union
 
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, field_validator, model_validator
 
@@ -70,11 +70,88 @@ class Ventana(ContractModel):
         return self
 
 
-class PreguntaAnalisis(ContractModel):
+CsvDisponible = Literal["presas", "precipitacion", "temperatura"]
+
+
+class DescribeArgs(ContractModel):
+    csv_name: CsvDisponible
+
+
+class FilterByDateArgs(ContractModel):
+    csv_name: CsvDisponible
+    desde: str
+    hasta: str
+
+
+class CalcStatsArgs(ContractModel):
+    csv_name: CsvDisponible
+    columna: str
+    agrupacion: str | None = None
+    desde: str | None = None
+    hasta: str | None = None
+
+
+class ComparePeriodsArgs(ContractModel):
+    csv_name: CsvDisponible
+    columna: str
+    periodo_a: list[str] = Field(min_length=2, max_length=2)
+    periodo_b: list[str] = Field(min_length=2, max_length=2)
+    agrupacion: str | None = None
+
+
+class PlotAsciiArgs(ContractModel):
+    """No mapea 1:1 a ``tool_plot_ascii(serie, width)`` real — ver comentario
+    en ``ejecutar_estadista`` (estadista.py): el Explorador propone series por
+    nombre de columna, pero ``estadista.py`` nunca ejecuta esta tool desde el
+    plan (sparklines reales via ``_sparkline_real``). TODO documentado."""
+
+    series: list[str]
+    desde: str
+    hasta: str
+
+
+class PreguntaDescribe(ContractModel):
     id: str = Field(min_length=1)
     objetivo: str = Field(min_length=1)
-    tool: ToolName
-    args: dict[str, JsonValue]
+    tool: Literal[ToolName.DESCRIBE]
+    args: DescribeArgs
+
+
+class PreguntaFilterByDate(ContractModel):
+    id: str = Field(min_length=1)
+    objetivo: str = Field(min_length=1)
+    tool: Literal[ToolName.FILTER_BY_DATE]
+    args: FilterByDateArgs
+
+
+class PreguntaCalcStats(ContractModel):
+    id: str = Field(min_length=1)
+    objetivo: str = Field(min_length=1)
+    tool: Literal[ToolName.CALC_STATS]
+    args: CalcStatsArgs
+
+
+class PreguntaComparePeriods(ContractModel):
+    id: str = Field(min_length=1)
+    objetivo: str = Field(min_length=1)
+    tool: Literal[ToolName.COMPARE_PERIODS]
+    args: ComparePeriodsArgs
+
+
+class PreguntaPlotAscii(ContractModel):
+    id: str = Field(min_length=1)
+    objetivo: str = Field(min_length=1)
+    tool: Literal[ToolName.PLOT_ASCII]
+    args: PlotAsciiArgs
+
+
+PreguntaAnalisis = Union[
+    PreguntaDescribe,
+    PreguntaFilterByDate,
+    PreguntaCalcStats,
+    PreguntaComparePeriods,
+    PreguntaPlotAscii,
+]
 
 
 class PlanAnalisis(ContractModel):

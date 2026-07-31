@@ -17,7 +17,8 @@ from backend.agents.explorador import ejecutar_explorador
 from backend.agents.narrador import ejecutar_narrador
 from backend.agents.supervisor import ejecutar_supervisor
 from backend.agents.juez import evaluar_calidad
-from backend.claude_client import ClaudeP, claude_p
+from backend.claude_client import ClaudeP
+from backend.llm_client import llm_p
 from backend.contracts import Boletin, RecomendacionAgricola, ResultadoEstadista, SupervisorMultiAudiencia
 from backend.mcp_tools.tools import (
     tool_calc_stats,
@@ -69,7 +70,7 @@ def orquestar(
     data_dir: Path,
     output_dir: Path,
     log_path: Path,
-    claude_fn: ClaudeP = claude_p,
+    claude_fn: ClaudeP = llm_p,
     contexto_historico_fn: Callable[[str], list[dict[str, object]]] | None = None,
 ) -> tuple[Boletin, RecomendacionAgricola, SupervisorMultiAudiencia, dict[str, object]]:
     descripciones = {csv: tool_describe(csv, data_dir=data_dir) for csv in CSVS_DESCRIPCION}
@@ -109,6 +110,7 @@ def orquestar(
     # Tier EXTREMO: Juez
     evaluacion = evaluar_calidad(versiones.contenido.model_dump(), claude_fn=claude_fn)
 
+    output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / f"BOLETIN_SEMANA_{semana}.md").write_text(boletin.markdown, encoding="utf-8")
 
     return boletin, recomendacion, versiones, evaluacion

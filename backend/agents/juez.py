@@ -5,7 +5,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from backend.claude_client import ClaudeP, claude_p
+from backend.claude_client import ClaudeP
+from backend.llm_client import llm_p
 
 
 SYSTEM_PROMPT_JUEZ = """
@@ -35,7 +36,7 @@ REGLAS:
 def agente_juez(
     texto: str,
     audiencia: str,
-    claude_fn: ClaudeP = claude_p,
+    claude_fn: ClaudeP = llm_p,
 ) -> dict[str, Any]:
     prompt = json.dumps(
         {"texto": texto, "audiencia": audiencia},
@@ -70,7 +71,7 @@ def agente_juez(
 
 def evaluar_calidad(
     versiones: dict[str, Any] | None,
-    claude_fn: ClaudeP = claude_p,
+    claude_fn: ClaudeP = llm_p,
 ) -> dict[str, Any] | None:
     if versiones is None:
         return None
