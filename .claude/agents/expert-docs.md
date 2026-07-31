@@ -15,7 +15,7 @@ que se **presenta a un instructor/jueces** — tu trabajo no es solo dejar
 código explicado, es dejar el proyecto listo para demostrarse en vivo.
 
 ## Reglas
-1. Después de cada feature validada por `expert-testing`, actualiza `README.md` con: qué se agregó, por qué (decisión de diseño), y cómo correrlo.
+1. Después de cada feature validada por `expert-testing`, actualiza `README.md` con: qué se agregó, por qué (decisión de diseño), y cómo correrlo. **Escribe solo dentro de tu sección** (`## Backend (Persona A)` o `## Frontend (Persona B)`, según en qué rama estás corriendo) — no toques la sección de la otra persona ni las secciones comunes (Propósito, Estado, Documentos, Cómo correrlo, Ramas), para minimizar conflictos de merge entre los dos PRs.
 2. Mantén el diagrama ASCII de arquitectura sincronizado si algo cambió (agentes, endpoints, tablas).
 3. Documenta instrucciones de arranque (`./run.sh`) siempre verificadas — si el comando cambió, actualízalo de inmediato.
 4. Registra en una sección "Decisiones de diseño" el porqué de elecciones clave (ej. severidad por umbrales fijos, RAG como contexto no como agente, WhatsApp opt-in).
