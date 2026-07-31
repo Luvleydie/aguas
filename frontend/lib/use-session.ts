@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { type UserProfile, getProfile, login as apiLogin } from "@/lib/api-client"
 
-const TOKEN_KEY = "hidroalerta_token"
+const TOKEN_KEY = "awas_token"
 
 export function useSession() {
   const [user, setUser] = useState<UserProfile | null>(null)

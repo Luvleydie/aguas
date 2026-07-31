@@ -27,7 +27,7 @@ function descargar(nombre: string, contenido: string, tipo: string) {
 export function MediosDashboard({ onLogout }: { onLogout: () => void }) {
   const [active, setActive] = useState("inicio")
 
-  const markdown = `# Boletín HidroAlerta — Semana ${boletinActual.semana}\n\n${boletinActual.fecha}\n\nNivel de alerta: ${boletinActual.nivel.toUpperCase()}\n\n${boletinActual.narrativo}`
+  const markdown = `# Boletín AWAS — Semana ${boletinActual.semana}\n\n${boletinActual.fecha}\n\nNivel de alerta: ${boletinActual.nivel.toUpperCase()}\n\n${boletinActual.narrativo}`
 
   return (
     <TabsLayout tabs={tabs} active={active} onSelect={setActive} roleName="Medios de comunicación" onLogout={onLogout}>
@@ -79,7 +79,7 @@ export function MediosDashboard({ onLogout }: { onLogout: () => void }) {
               </button>
               <button
                 type="button"
-                onClick={() => descargar(`hidroalerta-s${boletinActual.semana}.svg`, `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='400'><rect width='100%' height='100%' fill='#03695e'/><text x='40' y='120' fill='white' font-size='40' font-family='sans-serif'>HidroAlerta — Semana ${boletinActual.semana}</text><text x='40' y='190' fill='white' font-size='28' font-family='sans-serif'>Nivel: ${boletinActual.nivel}</text></svg>`, "image/svg+xml")}
+                onClick={() => descargar(`awas-s${boletinActual.semana}.svg`, `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='400'><rect width='100%' height='100%' fill='#03695e'/><text x='40' y='120' fill='white' font-size='40' font-family='sans-serif'>AWAS — Semana ${boletinActual.semana}</text><text x='40' y='190' fill='white' font-size='28' font-family='sans-serif'>Nivel: ${boletinActual.nivel}</text></svg>`, "image/svg+xml")}
                 className="flex items-center gap-2 rounded-2xl bg-accent px-6 py-4 text-base font-semibold text-accent-foreground hover:bg-accent/90"
               >
                 <ImageDown size={22} aria-hidden />
@@ -87,7 +87,7 @@ export function MediosDashboard({ onLogout }: { onLogout: () => void }) {
               </button>
               <button
                 type="button"
-                onClick={() => descargar(`hidroalerta-s${boletinActual.semana}.md`, markdown, "text/markdown")}
+                onClick={() => descargar(`awas-s${boletinActual.semana}.md`, markdown, "text/markdown")}
                 className="flex items-center gap-2 rounded-2xl border-2 border-primary px-6 py-4 text-base font-semibold text-primary hover:bg-secondary/50"
               >
                 <FileText size={22} aria-hidden />

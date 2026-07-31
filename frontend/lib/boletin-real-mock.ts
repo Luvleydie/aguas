@@ -15,7 +15,7 @@ export const boletinActualReal: BoletinReal = {
   publishedAt: null,
   nivel: "amarillo",
   markdown:
-    "# Boletín HidroAlerta · Semana 42\n\n## 1 · Estado de presas\n\nPromedio ponderado: **50.8 %**. Tendencia: `▃▃▂▂▂▁▁`.\n\n## 2 · Precipitación\n\nAcumulado medio mensual: **53.7 mm**. Tendencia: `▁▂▅█▆▃▂`.\n\n## 3 · Temperatura\n\nTemperatura máxima promedio: **26.3 °C** (`▅▆▃▂▂▁▃`).\n\n## 4 · Alerta y recomendación\n\nNivel global **AMARILLO**. Recomendación: activar vigilancia y campaña preventiva de ahorro.",
+    "# Boletín AWAS · Semana 42\n\n## 1 · Estado de presas\n\nPromedio ponderado: **50.8 %**. Tendencia: `▃▃▂▂▂▁▁`.\n\n## 2 · Precipitación\n\nAcumulado medio mensual: **53.7 mm**. Tendencia: `▁▂▅█▆▃▂`.\n\n## 3 · Temperatura\n\nTemperatura máxima promedio: **26.3 °C** (`▅▆▃▂▂▁▃`).\n\n## 4 · Alerta y recomendación\n\nNivel global **AMARILLO**. Recomendación: activar vigilancia y campaña preventiva de ahorro.",
   recomendacion: "Activar vigilancia y campaña preventiva de ahorro.",
   hallazgos: [
     {

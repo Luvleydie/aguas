@@ -28,7 +28,7 @@ describe("parseSeccionesBoletin", () => {
 
   it("ignora numeración opcional en el encabezado (## 1 · Estado de presas)", () => {
     const markdown = [
-      "# Boletín HidroAlerta · Semana 1",
+      "# Boletín AWAS · Semana 1",
       "",
       "## 1 · Estado de presas",
       "",

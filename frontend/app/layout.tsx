@@ -10,7 +10,7 @@ const publicSans = Public_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'HidroAlerta — Monitoreo de sequía y presas de Durango',
+  title: 'AWAS — Monitoreo de sequía y presas de Durango',
   description:
     'Dashboard de monitoreo de sequía y presas para el estado de Durango, México. Boletines semanales, tendencias y alertas por nivel.',
   generator: 'v0.app',

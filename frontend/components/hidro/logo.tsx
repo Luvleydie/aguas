@@ -25,9 +25,14 @@ export function Logo({
       >
         <Droplets size={iconSize} strokeWidth={2.4} aria-hidden />
       </span>
-      <span className={cn("font-bold tracking-tight leading-none", textSize, variant === "dark" ? "text-primary" : "text-white")}>
-        Hidro<span className="text-accent">Alerta</span>
-      </span>
+      <div className="flex flex-col leading-none">
+        <span className={cn("font-bold tracking-tight leading-none", textSize, variant === "dark" ? "text-primary" : "text-white")}>
+          AWAS
+        </span>
+        <span className={cn("text-[0.6em] tracking-wide leading-none mt-0.5", variant === "dark" ? "text-primary/70" : "text-white/70")}>
+          con el agua
+        </span>
+      </div>
     </div>
   )
 }

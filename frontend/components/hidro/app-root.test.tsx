@@ -21,7 +21,7 @@ beforeEach(() => {
 })
 
 function renderConSesion(rol: "gobierno" | "ayuntamiento" | "medios" | "agricultor") {
-  localStorage.setItem("hidroalerta_token", "tok_saved")
+  localStorage.setItem("awas_token", "tok_saved")
   mockGetProfile.mockResolvedValue({ id: "1", email: "test@test.com", rol })
   render(<AppRoot />)
 }

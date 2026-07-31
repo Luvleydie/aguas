@@ -29,7 +29,7 @@ export function AgricultorDashboard({ onLogout }: { onLogout: () => void }) {
   return (
     <div className="flex min-h-svh flex-col bg-background">
       <header className="flex items-center justify-between px-6 py-4">
-        <p className="text-lg font-bold text-primary">HidroAlerta</p>
+        <p className="text-lg font-bold text-primary">AWAS</p>
         <button
           type="button"
           onClick={onLogout}
