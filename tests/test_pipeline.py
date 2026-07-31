@@ -27,7 +27,7 @@ def test_pipeline_genera_boletin_y_recomendacion_con_cuatro_eventos_de_agente(
 
     monkeypatch.setenv("HIDROALERTA_DATA_DIR", str(data_dir))
 
-    boletin, recomendacion = orquestar(
+    boletin, recomendacion, versiones, evaluacion = orquestar(
         semana=42,
         data_dir=data_dir,
         output_dir=output_dir,
@@ -37,6 +37,9 @@ def test_pipeline_genera_boletin_y_recomendacion_con_cuatro_eventos_de_agente(
 
     assert isinstance(boletin, Boletin)
     assert isinstance(recomendacion, RecomendacionAgricola)
+    from backend.contracts import SupervisorMultiAudiencia
+    assert isinstance(versiones, SupervisorMultiAudiencia)
+    assert isinstance(evaluacion, dict)
     assert (output_dir / "BOLETIN_SEMANA_42.md").read_text(encoding="utf-8") == boletin.markdown
 
     eventos = [
@@ -48,6 +51,7 @@ def test_pipeline_genera_boletin_y_recomendacion_con_cuatro_eventos_de_agente(
         "estadista",
         "narrador",
         "agronomo",
+        "supervisor",
     ]
     assert all("timestamp" in evento for evento in eventos)
 
@@ -120,7 +124,7 @@ def test_pipeline_ignora_fallas_de_rag_sin_romper_el_pipeline(
 
     from backend.pipeline import orquestar
 
-    boletin, recomendacion = orquestar(
+    boletin, recomendacion, versiones, evaluacion = orquestar(
         semana=42,
         data_dir=data_dir,
         output_dir=output_dir,

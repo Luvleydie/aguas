@@ -117,6 +117,7 @@ def test_generar_boletin_persiste_boletin_recomendacion_y_logs(api, load_fixture
     eventos = [
         {"agente": "explorador", "semana": 42, "timestamp": "t1", "mensaje": {}},
         {"agente": "estadista", "semana": 42, "timestamp": "t2", "mensaje": {"hallazgos": []}},
+        {"agente": "supervisor", "semana": 42, "timestamp": "t2.5", "mensaje": {}},
         {"agente": "narrador", "semana": 42, "timestamp": "t3", "mensaje": boletin.model_dump(mode="json")},
         {
             "agente": "agronomo",
@@ -127,7 +128,7 @@ def test_generar_boletin_persiste_boletin_recomendacion_y_logs(api, load_fixture
     ]
     log_path.write_text("\n".join(json.dumps(e) for e in eventos) + "\n", encoding="utf-8")
     monkeypatch.setattr(main, "LOG_PATH", log_path)
-    monkeypatch.setattr(main, "orquestar", lambda **_: (boletin, recomendacion))
+    monkeypatch.setattr(main, "orquestar", lambda **_: (boletin, recomendacion, {"mock": "versiones"}, {"mock": "eval"}))
 
     respuesta = cliente.post("/api/boletin/generar", json={"semana": 42, "anio": 2024})
 
@@ -139,8 +140,12 @@ def test_generar_boletin_persiste_boletin_recomendacion_y_logs(api, load_fixture
     assert cuerpo["generado_por"] == "admin"
     assert cuerpo["publicado"] is False
 
+    boletin_db = next(b for b in fake_db.store["boletines"] if b["id"] == cuerpo["id"])
+    assert boletin_db.get("versiones_json") == {"mock": "versiones"}
+    assert boletin_db.get("evaluacion_calidad_json") == {"mock": "eval"}
+
     logs = fake_db.store["agent_logs"]
-    assert [evento["agente"] for evento in logs] == ["explorador", "estadista", "narrador", "agronomo"]
+    assert [evento["agente"] for evento in logs] == ["explorador", "estadista", "supervisor", "narrador", "agronomo"]
     assert all(evento["boletin_id"] == cuerpo["id"] for evento in logs)
 
 
@@ -155,12 +160,13 @@ def test_generar_boletin_duplicado_da_409(api, load_fixture, tmp_path, monkeypat
     eventos = [
         {"agente": "explorador", "semana": 10, "timestamp": "t1", "mensaje": {}},
         {"agente": "estadista", "semana": 10, "timestamp": "t2", "mensaje": {"hallazgos": []}},
+        {"agente": "supervisor", "semana": 10, "timestamp": "t2.5", "mensaje": {}},
         {"agente": "narrador", "semana": 10, "timestamp": "t3", "mensaje": boletin.model_dump(mode="json")},
         {"agente": "agronomo", "semana": 10, "timestamp": "t4", "mensaje": recomendacion.model_dump(mode="json")},
     ]
     log_path.write_text("\n".join(json.dumps(e) for e in eventos) + "\n", encoding="utf-8")
     monkeypatch.setattr(main, "LOG_PATH", log_path)
-    monkeypatch.setattr(main, "orquestar", lambda **_: (boletin, recomendacion))
+    monkeypatch.setattr(main, "orquestar", lambda **_: (boletin, recomendacion, {"mock": "versiones"}, {"mock": "eval"}))
 
     r1 = cliente.post("/api/boletin/generar", json={"semana": 10, "anio": 2024})
     assert r1.status_code == 201
@@ -181,12 +187,13 @@ def test_generar_boletin_duplicado_con_forzar_sobrescribe(api, load_fixture, tmp
     eventos = [
         {"agente": "explorador", "semana": 15, "timestamp": "t1", "mensaje": {}},
         {"agente": "estadista", "semana": 15, "timestamp": "t2", "mensaje": {"hallazgos": []}},
+        {"agente": "supervisor", "semana": 15, "timestamp": "t2.5", "mensaje": {}},
         {"agente": "narrador", "semana": 15, "timestamp": "t3", "mensaje": boletin.model_dump(mode="json")},
         {"agente": "agronomo", "semana": 15, "timestamp": "t4", "mensaje": recomendacion.model_dump(mode="json")},
     ]
     log_path.write_text("\n".join(json.dumps(e) for e in eventos) + "\n", encoding="utf-8")
     monkeypatch.setattr(main, "LOG_PATH", log_path)
-    monkeypatch.setattr(main, "orquestar", lambda **_: (boletin, recomendacion))
+    monkeypatch.setattr(main, "orquestar", lambda **_: (boletin, recomendacion, {"mock": "versiones"}, {"mock": "eval"}))
 
     r1 = cliente.post("/api/boletin/generar", json={"semana": 15, "anio": 2024})
     assert r1.status_code == 201

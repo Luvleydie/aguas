@@ -126,6 +126,44 @@ export function BoletinView({
         </div>
       )}
 
+      {boletin.evaluacion_calidad_json && (
+        <div className="overflow-hidden rounded-3xl bg-card shadow-sm">
+          <details className="group">
+            <summary className="flex cursor-pointer w-full items-center justify-between p-6 text-left text-lg font-semibold text-foreground hover:bg-muted/40 list-none [&::-webkit-details-marker]:hidden">
+              Calidad narrativa (LLM-as-judge)
+              <ChevronDown size={22} className="transition-transform group-open:rotate-180" aria-hidden />
+            </summary>
+            <div className="border-t border-border p-6 pt-2 grid gap-6 sm:grid-cols-3">
+              {Object.entries(boletin.evaluacion_calidad_json).map(([key, evalData]) => (
+                <div key={key} className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold text-foreground capitalize">{evalData.audiencia}</h4>
+                    <span className={cn("px-2 py-1 text-xs font-medium rounded-full",
+                      evalData.promedio >= 4 ? "bg-green-500/10 text-green-600" :
+                      evalData.promedio >= 3 ? "bg-orange-500/10 text-orange-600" :
+                      "bg-destructive/10 text-destructive"
+                    )}>
+                      {evalData.promedio.toFixed(1)} / 5
+                    </span>
+                  </div>
+                  <dl className="space-y-1 text-sm text-muted-foreground">
+                    <div className="flex justify-between"><span>Claridad:</span> <span className="font-medium text-foreground">{evalData.scores.claridad}</span></div>
+                    <div className="flex justify-between"><span>Tono:</span> <span className="font-medium text-foreground">{evalData.scores.tono_apropiado}</span></div>
+                    <div className="flex justify-between"><span>Accionabilidad:</span> <span className="font-medium text-foreground">{evalData.scores.accionabilidad}</span></div>
+                    <div className="flex justify-between"><span>Concisión:</span> <span className="font-medium text-foreground">{evalData.scores.concision}</span></div>
+                  </dl>
+                  {evalData.justificacion_breve && (
+                    <p className="text-xs text-muted-foreground italic border-t pt-2 mt-2">
+                      {evalData.justificacion_breve}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </details>
+        </div>
+      )}
+
       {showPublish && (
         <div className="flex flex-col items-start gap-3 rounded-3xl bg-card p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
           <div>

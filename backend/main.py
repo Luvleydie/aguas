@@ -296,7 +296,7 @@ def generar_boletin(
         db.table("agent_logs").delete().eq("boletin_id", existente["id"]).execute()
         sobrescribir = True
 
-    boletin, recomendacion = orquestar(
+    boletin, recomendacion, versiones, evaluacion = orquestar(
         semana=body.semana,
         data_dir=DATA_DIR,
         output_dir=OUTPUT_DIR,
@@ -304,10 +304,10 @@ def generar_boletin(
         contexto_historico_fn=contexto_historico,
     )
 
-    # orquestar() ya escribió los 4 eventos (uno por agente) al final de
+    # orquestar() ya escribió los 5 eventos (uno por agente) al final de
     # LOG_PATH; se reutilizan aquí en vez de volver a serializar cada
     # resultado, y el mensaje del Estadista es la fuente de hallazgos_json.
-    eventos = [json.loads(linea) for linea in LOG_PATH.read_text(encoding="utf-8").splitlines()][-4:]
+    eventos = [json.loads(linea) for linea in LOG_PATH.read_text(encoding="utf-8").splitlines()][-5:]
     hallazgos_json = next(
         (evento["mensaje"] for evento in eventos if evento["agente"] == "estadista"), {}
     )
@@ -318,6 +318,8 @@ def generar_boletin(
         "markdown": boletin.markdown,
         "hallazgos_json": hallazgos_json,
         "recomendacion_agricola_json": recomendacion.model_dump(mode="json"),
+        "versiones_json": versiones.model_dump(mode="json") if hasattr(versiones, "model_dump") else versiones,
+        "evaluacion_calidad_json": evaluacion,
         "nivel_alerta_global": boletin.nivel_alerta_global.value,
         "recomendacion": boletin.recomendacion,
         "publicado": False,

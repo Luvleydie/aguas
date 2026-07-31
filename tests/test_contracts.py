@@ -55,12 +55,13 @@ def test_boletin_exige_las_cuatro_secciones(load_fixture):
 
 
 def test_cada_agente_tiene_esquema_json_propio():
-    assert set(AGENT_SCHEMAS) == {"explorador", "estadista", "narrador", "agronomo"}
+    assert set(AGENT_SCHEMAS) == {"explorador", "estadista", "narrador", "agronomo", "supervisor"}
     assert {schema["title"] for schema in AGENT_SCHEMAS.values()} == {
         "PlanAnalisis",
         "ResultadoEstadista",
         "Boletin",
         "RecomendacionAgricola",
+        "SupervisorMultiAudiencia",
     }
-    assert len({json.dumps(schema, sort_keys=True) for schema in AGENT_SCHEMAS.values()}) == 4
+    assert len({json.dumps(schema, sort_keys=True) for schema in AGENT_SCHEMAS.values()}) == 5
 

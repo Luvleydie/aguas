@@ -33,6 +33,14 @@ export interface BoletinReal {
   markdown: string
   recomendacion: string
   hallazgos?: Hallazgo[]
+  evaluacion_calidad_json?: {
+    [key: string]: {
+      audiencia: string
+      scores: Record<string, number>
+      promedio: number
+      justificacion_breve: string
+    }
+  }
 }
 
 export interface SeccionesBoletin {

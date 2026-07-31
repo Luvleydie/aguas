@@ -15,8 +15,10 @@ from backend.agents.agronomo import ejecutar_agronomo
 from backend.agents.estadista import ejecutar_estadista
 from backend.agents.explorador import ejecutar_explorador
 from backend.agents.narrador import ejecutar_narrador
+from backend.agents.supervisor import ejecutar_supervisor
+from backend.agents.juez import evaluar_calidad
 from backend.claude_client import ClaudeP, claude_p
-from backend.contracts import Boletin, RecomendacionAgricola, ResultadoEstadista
+from backend.contracts import Boletin, RecomendacionAgricola, ResultadoEstadista, SupervisorMultiAudiencia
 from backend.mcp_tools.tools import (
     tool_calc_stats,
     tool_compare_periods,
@@ -69,7 +71,7 @@ def orquestar(
     log_path: Path,
     claude_fn: ClaudeP = claude_p,
     contexto_historico_fn: Callable[[str], list[dict[str, object]]] | None = None,
-) -> tuple[Boletin, RecomendacionAgricola]:
+) -> tuple[Boletin, RecomendacionAgricola, SupervisorMultiAudiencia, dict[str, object]]:
     descripciones = {csv: tool_describe(csv, data_dir=data_dir) for csv in CSVS_DESCRIPCION}
 
     plan = ejecutar_explorador(descripciones, semana=semana, claude_fn=claude_fn)
@@ -80,9 +82,6 @@ def orquestar(
 
     calendario_cultivos = _cargar_calendario_cultivos(data_dir)
 
-    # RAG (tier Pro, opcional): si no se inyecta contexto_historico_fn — o si
-    # falla (p. ej. el modelo de embeddings no está disponible) — el Narrador
-    # simplemente no recibe contexto histórico; no bloquea el resto del pipeline.
     contexto_historico: list[dict[str, object]] = []
     if contexto_historico_fn is not None:
         try:
@@ -90,9 +89,6 @@ def orquestar(
         except Exception:
             contexto_historico = []
 
-    # Narrador y Agrónomo parten de los mismos hallazgos y no dependen entre
-    # sí: se ejecutan en paralelo, pero se registran en orden fijo (narrador,
-    # agronomo) para que el log de auditoría sea determinista.
     with ThreadPoolExecutor(max_workers=2) as executor:
         futuro_boletin = executor.submit(
             ejecutar_narrador, hallazgos, claude_fn=claude_fn, contexto_historico=contexto_historico
@@ -106,6 +102,13 @@ def orquestar(
     _registrar(log_path, "narrador", semana, _dump(boletin))
     _registrar(log_path, "agronomo", semana, _dump(recomendacion))
 
+    # Tier EXTREMO: Supervisor
+    versiones = ejecutar_supervisor(hallazgos, recomendacion, boletin, claude_fn=claude_fn)
+    _registrar(log_path, "supervisor", semana, _dump(versiones))
+
+    # Tier EXTREMO: Juez
+    evaluacion = evaluar_calidad(versiones.contenido.model_dump(), claude_fn=claude_fn)
+
     (output_dir / f"BOLETIN_SEMANA_{semana}.md").write_text(boletin.markdown, encoding="utf-8")
 
-    return boletin, recomendacion
+    return boletin, recomendacion, versiones, evaluacion
