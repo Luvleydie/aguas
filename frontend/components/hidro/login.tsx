@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState } from "react"
-import { Mail, Lock, Loader2, UserPlus } from "lucide-react"
+import { Mail, Lock, Loader2, UserPlus, Eye, EyeOff } from "lucide-react"
 import { Logo } from "@/components/hidro/logo"
 import { Button } from "@/components/ui/button"
 import { type UserProfile, register } from "@/lib/api-client"
@@ -13,6 +13,7 @@ export function Login({ onLogin }: { onLogin: (email: string, password: string) 
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
@@ -72,13 +73,21 @@ export function Login({ onLogin }: { onLogin: (email: string, password: string) 
               <Lock size={20} className="text-muted-foreground" aria-hidden />
               <input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="h-14 w-full bg-transparent text-lg text-foreground outline-none placeholder:text-muted-foreground"
                 placeholder="••••••••"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="shrink-0 rounded-lg p-1 text-muted-foreground hover:text-foreground"
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
           </div>
 
