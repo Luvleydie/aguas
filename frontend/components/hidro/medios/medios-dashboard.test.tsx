@@ -2,39 +2,74 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MediosDashboard } from "./medios-dashboard"
-import { boletines, boletinActual, sequiasHistoricas } from "@/lib/hidro-data"
+import { sequiasHistoricas } from "@/lib/hidro-data"
+
+vi.mock("@/lib/api-client", () => ({
+  apiFetch: vi.fn(),
+}))
+
+import { apiFetch } from "@/lib/api-client"
+const mockApiFetch = vi.mocked(apiFetch)
+
+const boletinesMock = [
+  {
+    id: "bol-1",
+    semana: 52,
+    anio: 2025,
+    nivel: "naranja" as const,
+    markdown:
+      "# Boletín · Semana 52\n\n## Estado de presas\n\nAl 42%.\n\n## Precipitación\n\n1.2 mm.\n\n## Temperatura\n\n17.4 °C.\n\n## Alerta y recomendación\n\nNivel naranja. Restricción parcial del riego agrícola.",
+    recomendacion: "Restricción parcial del riego agrícola.",
+    publicado: true,
+  },
+  {
+    id: "bol-2",
+    semana: 51,
+    anio: 2025,
+    nivel: "amarillo" as const,
+    markdown:
+      "# Boletín · Semana 51\n\n## Estado de presas\n\nAl 45%.\n\n## Precipitación\n\n3.4 mm.\n\n## Temperatura\n\n16.1 °C.\n\n## Alerta y recomendación\n\nNivel amarillo. Vigilancia y uso responsable.",
+    recomendacion: "Vigilancia y uso responsable del agua.",
+    publicado: true,
+  },
+]
+
+beforeEach(() => {
+  vi.clearAllMocks()
+  mockApiFetch.mockResolvedValue(boletinesMock)
+  vi.stubGlobal("URL", { createObjectURL: vi.fn(() => "blob:mock"), revokeObjectURL: vi.fn() })
+  vi.spyOn(window, "print").mockImplementation(() => {})
+  vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {})
+})
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+  vi.restoreAllMocks()
+})
 
 describe("MediosDashboard", () => {
-  it("Inicio: lista los boletines publicados", () => {
-    render(<MediosDashboard onLogout={() => {}} />)
-    for (const b of boletines) {
-      expect(screen.getByText(new RegExp(`Semana ${b.semana}`))).toBeInTheDocument()
+  it("Inicio: lista los boletines de GET /api/boletin/historico", async () => {
+    render(<MediosDashboard onLogout={() => {}} token="tok" />)
+    expect(mockApiFetch).toHaveBeenCalledWith("/api/boletin/historico", { token: "tok" })
+    for (const b of boletinesMock) {
+      expect(await screen.findByText(new RegExp(`Semana ${b.semana}`))).toBeInTheDocument()
     }
   })
 
-  it("Boletín narrativo: muestra el texto narrativo de la semana actual", async () => {
+  it("Boletín narrativo: arma el texto a partir de markdown + recomendacion (ya no existe .narrativo)", async () => {
     const user = userEvent.setup()
-    render(<MediosDashboard onLogout={() => {}} />)
+    render(<MediosDashboard onLogout={() => {}} token="tok" />)
+    await screen.findByText(/Semana 52/)
 
     await user.click(screen.getByRole("button", { name: "Boletín narrativo" }))
-    expect(screen.getByText(boletinActual.narrativo)).toBeInTheDocument()
+    expect(screen.getByText(/Restricción parcial del riego agrícola/)).toBeInTheDocument()
   })
 
   describe("descargas", () => {
-    beforeEach(() => {
-      vi.stubGlobal("URL", { createObjectURL: vi.fn(() => "blob:mock"), revokeObjectURL: vi.fn() })
-      vi.spyOn(window, "print").mockImplementation(() => {})
-      vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {})
-    })
-
-    afterEach(() => {
-      vi.unstubAllGlobals()
-      vi.restoreAllMocks()
-    })
-
     it("'Descargar PDF' llama a window.print", async () => {
       const user = userEvent.setup()
-      render(<MediosDashboard onLogout={() => {}} />)
+      render(<MediosDashboard onLogout={() => {}} token="tok" />)
+      await screen.findByText(/Semana 52/)
       await user.click(screen.getByRole("button", { name: "Boletín narrativo" }))
 
       await user.click(screen.getByRole("button", { name: /descargar pdf/i }))
@@ -43,7 +78,8 @@ describe("MediosDashboard", () => {
 
     it("'Descargar imagen' y 'Descargar Markdown' generan un blob y disparan la descarga", async () => {
       const user = userEvent.setup()
-      render(<MediosDashboard onLogout={() => {}} />)
+      render(<MediosDashboard onLogout={() => {}} token="tok" />)
+      await screen.findByText(/Semana 52/)
       await user.click(screen.getByRole("button", { name: "Boletín narrativo" }))
 
       await user.click(screen.getByRole("button", { name: /descargar imagen/i }))
@@ -54,9 +90,10 @@ describe("MediosDashboard", () => {
     })
   })
 
-  it("Comparativa: grafica el historial junto a las sequías históricas", async () => {
+  it("Comparativa: grafica el historial junto a las sequías históricas (sin endpoint, sigue mockeado)", async () => {
     const user = userEvent.setup()
-    const { container } = render(<MediosDashboard onLogout={() => {}} />)
+    const { container } = render(<MediosDashboard onLogout={() => {}} token="tok" />)
+    await screen.findByText(/Semana 52/)
 
     await user.click(screen.getByRole("button", { name: "Comparativa" }))
 
