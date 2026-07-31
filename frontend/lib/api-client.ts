@@ -62,11 +62,22 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
   if (body !== undefined) headers["Content-Type"] = "application/json"
   if (token) headers.Authorization = `Bearer ${token}`
 
-  const response = await fetch(`${baseUrl}${path}`, {
-    method,
-    headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  })
+  let response: Response
+  try {
+    response = await fetch(`${baseUrl}${path}`, {
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    })
+  } catch (err) {
+    if (err instanceof TypeError && err.message === "Failed to fetch") {
+      throw new ApiError(
+        0,
+        "No se pudo conectar con el servidor. Verifica que la API esté corriendo en el puerto correcto.",
+      )
+    }
+    throw err
+  }
 
   if (!response.ok) {
     let detail = response.statusText

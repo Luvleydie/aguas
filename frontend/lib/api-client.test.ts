@@ -63,4 +63,13 @@ describe("apiFetch", () => {
 
     await expect(apiFetch("/api/logs/42")).rejects.toMatchObject({ status: 500, detail: "Server Error" })
   })
+
+  it("si fetch lanza un error de red (Failed to fetch), lanza un error descriptivo", async () => {
+    const fetchMock = vi.fn().mockRejectedValue(new TypeError("Failed to fetch"))
+    vi.stubGlobal("fetch", fetchMock)
+
+    await expect(apiFetch("/api/boletin/generar")).rejects.toMatchObject({
+      message: expect.stringContaining("No se pudo conectar"),
+    })
+  })
 })
