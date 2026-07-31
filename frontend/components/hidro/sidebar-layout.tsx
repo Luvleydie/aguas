@@ -108,7 +108,7 @@ export function SidebarLayout({
         </nav>
 
         <main className="flex-1 p-5 md:p-8">
-          <div className="mx-auto max-w-5xl">{children}</div>
+          <div className="mx-auto max-w-6xl lg:max-w-7xl">{children}</div>
         </main>
       </div>
     </div>

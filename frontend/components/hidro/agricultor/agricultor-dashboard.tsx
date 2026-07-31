@@ -51,9 +51,9 @@ export function AgricultorDashboard({ onLogout, token }: { onLogout: () => void;
         </button>
       </header>
 
-      <main className="flex flex-1 flex-col items-center justify-center px-6 pb-6">
+      <main className="flex flex-1 flex-col items-center justify-center px-4 pb-6 sm:px-6 md:max-w-lg md:mx-auto lg:max-w-xl">
         {active === "inicio" && (
-          <div className="flex w-full max-w-md flex-col items-center gap-8 text-center">
+          <div className="flex w-full max-w-sm flex-col items-center gap-8 text-center sm:max-w-md">
             <Semaforo nivel={boletinActual.nivel} size="xl" showScale showLabel={false} />
             {loading ? (
               <Loader2 size={28} className="animate-spin text-muted-foreground" />
@@ -79,7 +79,7 @@ export function AgricultorDashboard({ onLogout, token }: { onLogout: () => void;
         )}
 
         {active === "siembra" && (
-          <div className="flex w-full max-w-md flex-col gap-5">
+          <div className="flex w-full max-w-sm flex-col gap-5 sm:max-w-md">
             <h2 className="text-center text-3xl font-bold text-foreground">Siembra recomendada</h2>
             {loading ? (
               <div className="flex justify-center">
@@ -119,7 +119,7 @@ export function AgricultorDashboard({ onLogout, token }: { onLogout: () => void;
         )}
 
         {active === "historial" && (
-          <div className="flex w-full max-w-md flex-col items-center gap-8 text-center">
+          <div className="flex w-full max-w-sm flex-col items-center gap-8 text-center sm:max-w-md">
             <h2 className="text-3xl font-bold text-foreground">Últimas 4 semanas</h2>
             <div className="flex flex-wrap items-end justify-center gap-5">
               {historialSemanas.map((nivel, i) => (
