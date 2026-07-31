@@ -26,18 +26,18 @@ def ollama_p(
         )
 
     full_prompt = prompt
+    if system:
+        full_prompt = f"INSTRUCCIONES DEL SISTEMA:\n{system}\n\n---\n\n{full_prompt}"
+
     if schema:
         schema_hint = (
             "\n\nResponde EXCLUSIVAMENTE con JSON válido que cumpla este esquema. "
             "Sin texto adicional, sin bloques de código, solo JSON puro:\n"
             f"{json.dumps(schema, ensure_ascii=False, indent=2)}"
         )
-        full_prompt = prompt + schema_hint
+        full_prompt += schema_hint
 
-    command = [executable, "run", model]
-    if system:
-        command.extend(["--system", system])
-    command.append(full_prompt)
+    command = [executable, "run", model, full_prompt]
 
     result = subprocess.run(
         command,
