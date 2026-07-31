@@ -1,12 +1,14 @@
 "use client"
 
-import { useState } from "react"
-import { Home, Sprout, CalendarClock, Volume2, LogOut, Sun } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Home, Sprout, CalendarClock, Volume2, LogOut, Sun, Loader2 } from "lucide-react"
 import { Semaforo } from "@/components/hidro/semaforo"
 import { historialSemanas, nivelConfig, boletinActual } from "@/lib/hidro-data"
-import { accionLabel, nombreCultivo, ventanaSiembra } from "@/lib/recomendacion-adapter"
-import { recomendacionActualReal } from "@/lib/recomendacion-real-mock"
+import { accionLabel, nombreCultivo, ventanaSiembra, type RecomendacionAgricolaReal } from "@/lib/recomendacion-adapter"
+import { apiFetch } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
+
+const SEMANA = 52
 
 function hablar(texto: string) {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return
@@ -23,8 +25,17 @@ const nav = [
   { id: "historial", label: "Historial", icon: CalendarClock },
 ]
 
-export function AgricultorDashboard({ onLogout }: { onLogout: () => void }) {
+export function AgricultorDashboard({ onLogout, token }: { onLogout: () => void; token: string }) {
   const [active, setActive] = useState("inicio")
+  const [recomendacion, setRecomendacion] = useState<RecomendacionAgricolaReal | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    apiFetch<RecomendacionAgricolaReal>(`/api/siembra/${SEMANA}`, { token })
+      .then(setRecomendacion)
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [token])
 
   return (
     <div className="flex min-h-svh flex-col bg-background">
@@ -44,24 +55,40 @@ export function AgricultorDashboard({ onLogout }: { onLogout: () => void }) {
         {active === "inicio" && (
           <div className="flex w-full max-w-md flex-col items-center gap-8 text-center">
             <Semaforo nivel={boletinActual.nivel} size="xl" showScale showLabel={false} />
-            <p className="text-3xl font-bold leading-snug text-foreground text-balance">
-              {recomendacionActualReal.mensaje_whatsapp}
-            </p>
-            <button
-              type="button"
-              onClick={() => hablar(recomendacionActualReal.mensaje_whatsapp)}
-              className="flex h-32 w-32 flex-col items-center justify-center gap-1 rounded-full bg-accent text-accent-foreground shadow-lg transition-transform active:scale-95"
-              aria-label="Escuchar la recomendación en voz alta"
-            >
-              <Volume2 size={44} aria-hidden />
-              <span className="text-lg font-bold">Escuchar</span>
-            </button>
+            {loading ? (
+              <Loader2 size={28} className="animate-spin text-muted-foreground" />
+            ) : recomendacion ? (
+              <>
+                <p className="text-3xl font-bold leading-snug text-foreground text-balance">
+                  {recomendacion.mensaje_whatsapp}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => hablar(recomendacion.mensaje_whatsapp)}
+                  className="flex h-32 w-32 flex-col items-center justify-center gap-1 rounded-full bg-accent text-accent-foreground shadow-lg transition-transform active:scale-95"
+                  aria-label="Escuchar la recomendación en voz alta"
+                >
+                  <Volume2 size={44} aria-hidden />
+                  <span className="text-lg font-bold">Escuchar</span>
+                </button>
+              </>
+            ) : (
+              <p className="text-lg text-muted-foreground">Sin recomendación disponible.</p>
+            )}
           </div>
         )}
 
         {active === "siembra" && (
           <div className="flex w-full max-w-md flex-col gap-5">
             <h2 className="text-center text-3xl font-bold text-foreground">Siembra recomendada</h2>
+            {loading ? (
+              <div className="flex justify-center">
+                <Loader2 size={28} className="animate-spin text-muted-foreground" />
+              </div>
+            ) : !recomendacion ? (
+              <p className="text-center text-lg text-muted-foreground">Sin recomendación disponible.</p>
+            ) : (
+              <>
             <div className="flex items-center gap-5 rounded-3xl bg-card p-6 shadow-sm">
               <span
                 className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full text-white"
@@ -70,11 +97,11 @@ export function AgricultorDashboard({ onLogout }: { onLogout: () => void }) {
                 <Sprout size={40} />
               </span>
               <div>
-                <p className="text-2xl font-bold text-foreground">{nombreCultivo(recomendacionActualReal.cultivo_prioritario)}</p>
+                <p className="text-2xl font-bold text-foreground">{nombreCultivo(recomendacion.cultivo_prioritario)}</p>
                 <p className="text-xl font-bold uppercase" style={{ color: "var(--nivel-naranja)" }}>
-                  {accionLabel(recomendacionActualReal.accion)}
+                  {accionLabel(recomendacion.accion)}
                 </p>
-                <p className="mt-1 text-lg text-muted-foreground leading-relaxed">{recomendacionActualReal.razon}</p>
+                <p className="mt-1 text-lg text-muted-foreground leading-relaxed">{recomendacion.razon}</p>
               </div>
             </div>
             <div className="flex items-center gap-4 rounded-3xl bg-card p-6 shadow-sm">
@@ -83,9 +110,11 @@ export function AgricultorDashboard({ onLogout }: { onLogout: () => void }) {
               </span>
               <div>
                 <p className="text-base font-semibold text-muted-foreground">Ventana de siembra</p>
-                <p className="text-xl font-bold text-foreground">{ventanaSiembra(recomendacionActualReal.cultivo_prioritario)}</p>
+                <p className="text-xl font-bold text-foreground">{ventanaSiembra(recomendacion.cultivo_prioritario)}</p>
               </div>
             </div>
+              </>
+            )}
           </div>
         )}
 
