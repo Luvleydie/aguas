@@ -37,28 +37,30 @@ export function GobiernoUsuarios() {
           Alertas por WhatsApp — disponibles en una fase futura.
         </p>
       </div>
-      <table className="w-full">
-        <thead>
-          <tr className="border-y border-border bg-secondary/40 text-left text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            <th className="px-6 py-3 sm:px-8">Nombre</th>
-            <th className="px-6 py-3">Rol</th>
-            <th className="px-6 py-3 text-right sm:px-8">WhatsApp</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border">
-          {data.map((u) => (
-            <tr key={u.id}>
-              <td className="px-6 py-4 text-lg font-medium text-foreground sm:px-8">{u.nombre}</td>
-              <td className="px-6 py-4 text-base text-muted-foreground">{u.rol}</td>
-              <td className="px-6 py-4 sm:px-8">
-                <div className="flex justify-end">
-                  <Toggle on={u.whatsapp} label={`WhatsApp para ${u.nombre}`} />
-                </div>
-              </td>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-y border-border bg-secondary/40 text-left text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              <th className="px-6 py-3 sm:px-8">Nombre</th>
+              <th className="px-6 py-3">Rol</th>
+              <th className="px-6 py-3 text-right sm:px-8">WhatsApp</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {data.map((u) => (
+              <tr key={u.id}>
+                <td className="px-6 py-4 text-lg font-medium text-foreground sm:px-8">{u.nombre}</td>
+                <td className="px-6 py-4 text-base text-muted-foreground">{u.rol}</td>
+                <td className="px-6 py-4 sm:px-8">
+                  <div className="flex justify-end">
+                    <Toggle on={u.whatsapp} label={`WhatsApp para ${u.nombre}`} />
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

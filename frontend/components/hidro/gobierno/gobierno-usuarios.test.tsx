@@ -24,4 +24,10 @@ describe("GobiernoUsuarios", () => {
     await user.click(primerToggle)
     expect(primerToggle.getAttribute("aria-checked")).toBe(estadoInicial)
   })
+
+  it("la tabla tiene un contenedor con scroll horizontal (red de seguridad en pantallas angostas)", () => {
+    render(<GobiernoUsuarios />)
+    const tabla = screen.getByRole("table")
+    expect(tabla.parentElement).toHaveClass("overflow-x-auto")
+  })
 })
