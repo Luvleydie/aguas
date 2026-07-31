@@ -1,0 +1,42 @@
+{
+  "vigencia": "2025-01",
+  "notas": "Umbrales de severidad para el boletín HidroAlerta. Calibrados sobre presas_2024.csv, precipitacion_estaciones.csv y temperatura_regional.csv. Un boletín cuya alerta global se calcula con la severidad máxima de las 4 métricas evaluadas.",
+  "metricas": {
+    "nivel_presa_pct": {
+      "descripcion": "Nivel promedio ponderado de las 3 presas del Valle del Guadiana",
+      "unidad": "%",
+      "verde":    { "min": 60.01, "max": 100.0 },
+      "amarillo": { "min": 40.01, "max": 60.0 },
+      "naranja":  { "min": 25.01, "max": 40.0 },
+      "rojo":     { "min": 0.0,   "max": 25.0 }
+    },
+    "precipitacion_mensual_mm": {
+      "descripcion": "Precipitación acumulada mensual (media de estaciones del estado)",
+      "unidad": "mm",
+      "verde":    { "min": 80.01, "max": 500.0 },
+      "amarillo": { "min": 40.01, "max": 80.0 },
+      "naranja":  { "min": 15.01, "max": 40.0 },
+      "rojo":     { "min": 0.0,   "max": 15.0 }
+    },
+    "delta_nivel_mensual_pp": {
+      "descripcion": "Diferencia en puntos porcentuales del nivel de presa vs mes anterior",
+      "unidad": "pp",
+      "verde":    { "min":  0.0,  "max": 100.0 },
+      "amarillo": { "min": -3.0,  "max":  0.0 },
+      "naranja":  { "min": -8.0,  "max": -3.0 },
+      "rojo":     { "min": -100.0,"max": -8.0 }
+    },
+    "temp_max_promedio_c": {
+      "descripcion": "Promedio de temperatura máxima del período (Valle del Guadiana)",
+      "unidad": "°C",
+      "verde":    { "min": -10.0, "max": 30.0 },
+      "amarillo": { "min":  30.01,"max": 34.0 },
+      "naranja":  { "min":  34.01,"max": 38.0 },
+      "rojo":     { "min":  38.01,"max": 60.0 }
+    }
+  },
+  "alerta_global": {
+    "regla": "El nivel de alerta global es la severidad MÁXIMA de las 4 métricas.",
+    "orden": ["verde", "amarillo", "naranja", "rojo"]
+  }
+}

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from backend.claude_client import ClaudeP, claude_p
@@ -53,6 +54,7 @@ def ejecutar_explorador(
     semana: int,
     claude_fn: ClaudeP = claude_p,
 ) -> PlanAnalisis:
-    del descripciones, semana, claude_fn
-    raise NotImplementedError("ROJO esperado: agente Explorador pendiente")
+    prompt = json.dumps({"descripciones": descripciones, "semana": semana}, ensure_ascii=False)
+    bruto = claude_fn(prompt, system=SYSTEM_PROMPT, schema=PlanAnalisis.model_json_schema())
+    return PlanAnalisis.model_validate(bruto)
 
