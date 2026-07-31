@@ -7,7 +7,12 @@ const sizeMap = {
   sm: { circle: "h-20 w-20", label: "text-base", value: "text-sm", dot: "h-3 w-3" },
   md: { circle: "h-32 w-32", label: "text-xl", value: "text-base", dot: "h-4 w-4" },
   lg: { circle: "h-44 w-44", label: "text-2xl", value: "text-lg", dot: "h-5 w-5" },
-  xl: { circle: "h-64 w-64", label: "text-4xl", value: "text-2xl", dot: "h-6 w-6" },
+  xl: {
+    circle: "h-64 w-64 max-[380px]:h-56 max-[380px]:w-56 max-[340px]:h-48 max-[340px]:w-48",
+    label: "text-4xl",
+    value: "text-2xl",
+    dot: "h-6 w-6",
+  },
 }
 
 export function Semaforo({
