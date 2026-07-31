@@ -2,19 +2,28 @@
 
 import type React from "react"
 import { useState } from "react"
-import { Mail, Lock } from "lucide-react"
+import { Mail, Lock, Loader2 } from "lucide-react"
 import { Logo } from "@/components/hidro/logo"
 import { Button } from "@/components/ui/button"
-import { type Rol, roles } from "@/lib/hidro-data"
+import { type UserProfile } from "@/lib/api-client"
 
-export function Login({ onLogin }: { onLogin: (rol: Rol) => void }) {
-  const [rol, setRol] = useState<Rol>("gobierno")
+export function Login({ onLogin }: { onLogin: (email: string, password: string) => Promise<UserProfile> }) {
   const [email, setEmail] = useState("demo@durango.gob.mx")
   const [password, setPassword] = useState("hidroalerta")
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    onLogin(rol)
+    setError(null)
+    setLoading(true)
+    try {
+      await onLogin(email, password)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al iniciar sesión")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -64,26 +73,12 @@ export function Login({ onLogin }: { onLogin: (rol: Rol) => void }) {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="rol" className="text-base font-semibold text-foreground">
-              Tipo de cuenta
-            </label>
-            <select
-              id="rol"
-              value={rol}
-              onChange={(e) => setRol(e.target.value as Rol)}
-              className="h-14 w-full rounded-2xl border border-input bg-background px-4 text-lg text-foreground outline-none focus:border-ring focus:ring-3 focus:ring-ring/40"
-            >
-              {roles.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.nombre}
-                </option>
-              ))}
-            </select>
-          </div>
+          {error && (
+            <p className="text-sm font-medium text-destructive">{error}</p>
+          )}
 
-          <Button type="submit" className="h-14 w-full text-lg font-semibold">
-            Iniciar sesión
+          <Button type="submit" disabled={loading} className="h-14 w-full text-lg font-semibold">
+            {loading ? <Loader2 size={22} className="animate-spin" /> : "Iniciar sesión"}
           </Button>
         </form>
 

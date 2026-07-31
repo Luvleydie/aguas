@@ -28,7 +28,7 @@ const titulos: Record<string, string> = {
   usuarios: "Usuarios",
 }
 
-export function GobiernoDashboard({ onLogout }: { onLogout: () => void }) {
+export function GobiernoDashboard({ onLogout, token }: { onLogout: () => void; token: string }) {
   const [active, setActive] = useState("inicio")
 
   return (
@@ -40,11 +40,11 @@ export function GobiernoDashboard({ onLogout }: { onLogout: () => void }) {
       onLogout={onLogout}
       title={titulos[active]}
     >
-      {active === "inicio" && <GobiernoInicio onNavigate={setActive} />}
-      {active === "generar" && <GobiernoGenerar onDone={() => setActive("boletin")} />}
-      {active === "boletin" && <GobiernoBoletin />}
+      {active === "inicio" && <GobiernoInicio onNavigate={setActive} token={token} />}
+      {active === "generar" && <GobiernoGenerar onDone={() => setActive("boletin")} token={token} />}
+      {active === "boletin" && <GobiernoBoletin token={token} />}
       {active === "tendencias" && <GobiernoTendencias />}
-      {active === "auditoria" && <GobiernoAuditoria />}
+      {active === "auditoria" && <GobiernoAuditoria token={token} />}
       {active === "usuarios" && <GobiernoUsuarios />}
     </SidebarLayout>
   )

@@ -1,8 +1,10 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { FilePlus2, FileText, TrendingUp, ArrowRight } from "lucide-react"
 import { Semaforo } from "@/components/hidro/semaforo"
-import { boletinActual } from "@/lib/hidro-data"
+import { apiFetch, type BoletinReal } from "@/lib/api-client"
+import { NivelBadge } from "@/components/hidro/nivel-badge"
 
 const accesos = [
   { id: "generar", titulo: "Generar boletín", desc: "Crea el boletín de la semana", icon: FilePlus2 },
@@ -10,21 +12,45 @@ const accesos = [
   { id: "tendencias", titulo: "Tendencias", desc: "Evolución del nivel de presas", icon: TrendingUp },
 ]
 
-export function GobiernoInicio({ onNavigate }: { onNavigate: (id: string) => void }) {
+export function GobiernoInicio({ onNavigate, token }: { onNavigate: (id: string) => void; token: string }) {
+  const [boletin, setBoletin] = useState<BoletinReal | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    apiFetch<BoletinReal>("/api/boletin/historico", { token })
+      .then((lista) => { if (lista.length > 0) setBoletin(lista[0]) })
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [token])
+
   return (
     <div className="space-y-6">
       <div className="grid gap-6 lg:grid-cols-[auto_1fr]">
         <div className="flex flex-col items-center justify-center rounded-3xl bg-card p-8 shadow-sm">
           <p className="mb-4 text-lg font-semibold text-muted-foreground">Nivel de alerta estatal</p>
-          <Semaforo nivel={boletinActual.nivel} size="lg" />
+          {loading ? (
+            <p className="text-muted-foreground">Cargando...</p>
+          ) : boletin ? (
+            <Semaforo nivel={boletin.nivel} size="lg" />
+          ) : (
+            <p className="text-muted-foreground">Sin boletines</p>
+          )}
         </div>
 
         <div className="flex flex-col justify-center rounded-3xl bg-card p-8 shadow-sm">
           <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            Boletín más reciente · Semana {boletinActual.semana}
+            Boletín más reciente {boletin ? `· Semana ${boletin.semana}` : ""}
           </p>
-          <h2 className="mt-1 text-2xl font-bold text-foreground">{boletinActual.fecha}</h2>
-          <p className="mt-4 text-lg leading-relaxed text-foreground text-pretty">{boletinActual.resumen}</p>
+          {boletin && (
+            <>
+              <div className="mt-2">
+                <NivelBadge nivel={boletin.nivel} />
+              </div>
+              <p className="mt-4 text-lg leading-relaxed text-foreground text-pretty line-clamp-3">
+                {boletin.recomendacion}
+              </p>
+            </>
+          )}
           <button
             type="button"
             onClick={() => onNavigate("boletin")}

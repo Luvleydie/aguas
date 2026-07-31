@@ -1,13 +1,29 @@
-import { describe, expect, it } from "vitest"
-import { render, screen } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
+import { describe, expect, it, vi, beforeEach } from "vitest"
+
+vi.mock("@/lib/api-client", () => ({
+  login: vi.fn(),
+  getProfile: vi.fn(),
+  apiFetch: vi.fn().mockResolvedValue([]),
+}))
+
+import { login, getProfile, apiFetch } from "@/lib/api-client"
+import { render, screen, waitFor } from "@testing-library/react"
 import { AppRoot } from "./app-root"
 
-async function loginComo(rol: "gobierno" | "ayuntamiento" | "medios" | "agricultor") {
-  const user = userEvent.setup()
+const mockLogin = vi.mocked(login)
+const mockGetProfile = vi.mocked(getProfile)
+const mockApiFetch = vi.mocked(apiFetch)
+
+beforeEach(() => {
+  localStorage.clear()
+  vi.clearAllMocks()
+  mockApiFetch.mockResolvedValue([])
+})
+
+function renderConSesion(rol: "gobierno" | "ayuntamiento" | "medios" | "agricultor") {
+  localStorage.setItem("hidroalerta_token", "tok_saved")
+  mockGetProfile.mockResolvedValue({ id: "1", email: "test@test.com", rol })
   render(<AppRoot />)
-  await user.selectOptions(screen.getByLabelText("Tipo de cuenta"), rol)
-  await user.click(screen.getByRole("button", { name: /iniciar sesión/i }))
 }
 
 describe("AppRoot", () => {
@@ -17,25 +33,30 @@ describe("AppRoot", () => {
   })
 
   it("redirige a Gobierno si rol=gobierno", async () => {
-    await loginComo("gobierno")
-    expect(screen.getByText("Gobierno del Estado")).toBeInTheDocument()
-    // SidebarLayout duplica los items de navegación entre el aside de
-    // escritorio y el nav scroller móvil (ambos montados a la vez en jsdom).
-    expect(screen.getAllByText("Auditoría").length).toBeGreaterThan(0)
+    renderConSesion("gobierno")
+    await waitFor(() => {
+      expect(screen.getByText("Gobierno del Estado")).toBeInTheDocument()
+    })
   })
 
   it("redirige a Ayuntamiento si rol=ayuntamiento", async () => {
-    await loginComo("ayuntamiento")
-    expect(screen.getByText("Ayuntamiento de Durango")).toBeInTheDocument()
+    renderConSesion("ayuntamiento")
+    await waitFor(() => {
+      expect(screen.getByText("Ayuntamiento de Durango")).toBeInTheDocument()
+    })
   })
 
   it("redirige a Medios si rol=medios", async () => {
-    await loginComo("medios")
-    expect(screen.getByText("Boletín narrativo")).toBeInTheDocument()
+    renderConSesion("medios")
+    await waitFor(() => {
+      expect(screen.getByText("Boletín narrativo")).toBeInTheDocument()
+    })
   })
 
   it("redirige a Agricultor si rol=agricultor", async () => {
-    await loginComo("agricultor")
-    expect(screen.getByText("Siembra")).toBeInTheDocument()
+    renderConSesion("agricultor")
+    await waitFor(() => {
+      expect(screen.getByText("Siembra")).toBeInTheDocument()
+    })
   })
 })

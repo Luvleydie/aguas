@@ -218,6 +218,11 @@ def login(body: LoginRequest) -> dict[str, Any]:
     }
 
 
+@app.get("/api/auth/me")
+def auth_me(usuario: UsuarioActual = Depends(get_current_user)) -> dict[str, Any]:
+    return {"id": usuario.id, "email": usuario.email, "rol": usuario.rol}
+
+
 @app.post("/api/boletin/generar", status_code=status.HTTP_201_CREATED)
 def generar_boletin(
     body: GenerarBoletinRequest,

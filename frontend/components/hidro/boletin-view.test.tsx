@@ -1,9 +1,13 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi, beforeEach } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { BoletinView } from "./boletin-view"
 import { boletinActualReal } from "@/lib/boletin-real-mock"
 import type { BoletinReal } from "@/lib/boletin-adapter"
+
+vi.mock("@/lib/api-client", () => ({
+  apiFetch: vi.fn().mockResolvedValue({}),
+}))
 
 describe("BoletinView (contrato real: markdown + hallazgos)", () => {
   it("renderiza las 4 secciones fijas parseadas del markdown del Narrador", () => {
@@ -44,7 +48,7 @@ describe("BoletinView (contrato real: markdown + hallazgos)", () => {
 
   it("con showPublish, el botón publica y refleja boletin.publicado", async () => {
     const user = userEvent.setup()
-    render(<BoletinView boletin={boletinActualReal} showPublish />)
+    render(<BoletinView boletin={boletinActualReal} showPublish token="tok" />)
 
     expect(screen.getByText("Boletín en borrador")).toBeInTheDocument()
     await user.click(screen.getByRole("button", { name: /publicar boletín/i }))

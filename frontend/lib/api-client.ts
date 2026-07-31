@@ -16,6 +16,29 @@ export interface ApiFetchOptions {
   body?: unknown
 }
 
+export interface LoginResponse {
+  access_token: string
+  refresh_token: string
+  user: { id: string; email: string }
+}
+
+export interface UserProfile {
+  id: string
+  email: string
+  rol: "gobierno" | "ayuntamiento" | "medios" | "agricultor"
+}
+
+export async function login(email: string, password: string): Promise<LoginResponse> {
+  return apiFetch<LoginResponse>("/api/auth/login", {
+    method: "POST",
+    body: { email, password },
+  })
+}
+
+export async function getProfile(token: string): Promise<UserProfile> {
+  return apiFetch<UserProfile>("/api/auth/me", { token })
+}
+
 /**
  * En producción el frontend se sirve desde el mismo proceso/puerto que la
  * API (ver backend/main.py, run.sh), así que NEXT_PUBLIC_API_URL queda

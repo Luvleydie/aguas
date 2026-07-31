@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { ChevronDown, Droplet, CloudRain, Thermometer, TriangleAlert, CheckCircle2, Send } from "lucide-react"
+import { ChevronDown, Droplet, CloudRain, Thermometer, TriangleAlert, CheckCircle2, Send, Loader2 } from "lucide-react"
 import { type BoletinReal, parseSeccionesBoletin } from "@/lib/boletin-adapter"
+import { apiFetch } from "@/lib/api-client"
 import { Semaforo } from "@/components/hidro/semaforo"
 import { NivelBadge } from "@/components/hidro/nivel-badge"
 import { Button } from "@/components/ui/button"
@@ -36,13 +37,29 @@ const SECCIONES_UI = [
 export function BoletinView({
   boletin,
   showPublish = false,
+  token,
 }: {
   boletin: BoletinReal
   showPublish?: boolean
+  token?: string
 }) {
   const [rawOpen, setRawOpen] = useState(false)
   const [publicado, setPublicado] = useState(boletin.publicado)
+  const [publishing, setPublishing] = useState(false)
   const secciones = parseSeccionesBoletin(boletin.markdown)
+
+  async function handlePublish() {
+    if (!token || !boletin.id) return
+    setPublishing(true)
+    try {
+      await apiFetch(`/api/boletin/${boletin.id}/publicar`, { method: "POST", token })
+      setPublicado(true)
+    } catch {
+      // silenciar error por ahora
+    } finally {
+      setPublishing(false)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -123,13 +140,13 @@ export function BoletinView({
           </div>
           <Button
             size="lg"
-            onClick={() => setPublicado(true)}
-            disabled={publicado}
+            onClick={handlePublish}
+            disabled={publicado || publishing}
             className="h-12 gap-2 px-6 text-base font-semibold text-white"
             style={{ backgroundColor: "var(--nivel-verde)" }}
           >
-            {publicado ? <CheckCircle2 size={20} /> : <Send size={20} />}
-            {publicado ? "Publicado" : "Publicar boletín"}
+            {publishing ? <Loader2 size={20} className="animate-spin" /> : publicado ? <CheckCircle2 size={20} /> : <Send size={20} />}
+            {publishing ? "Publicando..." : publicado ? "Publicado" : "Publicar boletín"}
           </Button>
         </div>
       )}

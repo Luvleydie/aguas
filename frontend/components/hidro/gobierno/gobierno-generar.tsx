@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Search, BarChart3, PenLine, Sprout, Check, Loader2, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { apiFetch, type BoletinReal } from "@/lib/api-client"
 
 const pasos = [
   { id: "explorador", nombre: "Explorador", desc: "Recopila datos de presas y clima", icon: Search },
@@ -12,27 +13,36 @@ const pasos = [
   { id: "agronomo", nombre: "Agrónomo", desc: "Emite recomendaciones agrícolas", icon: Sprout },
 ]
 
-export function GobiernoGenerar({ onDone }: { onDone: () => void }) {
+export function GobiernoGenerar({ onDone, token }: { onDone: () => void; token: string }) {
   const [semana, setSemana] = useState(52)
   const [running, setRunning] = useState(false)
   const [step, setStep] = useState(-1)
   const [finished, setFinished] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (!running) return
-    if (step >= pasos.length) {
-      setFinished(true)
-      setRunning(false)
-      return
-    }
-    const t = setTimeout(() => setStep((s) => s + 1), 1100)
-    return () => clearTimeout(t)
-  }, [running, step])
-
-  function start() {
+  async function start() {
     setFinished(false)
     setStep(0)
     setRunning(true)
+    setError(null)
+
+    for (let i = 0; i < pasos.length; i++) {
+      await new Promise((r) => setTimeout(r, 800))
+      setStep(i + 1)
+    }
+
+    try {
+      await apiFetch<BoletinReal>("/api/boletin/generar", {
+        method: "POST",
+        token,
+        body: { semana },
+      })
+      setFinished(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al generar boletín")
+    } finally {
+      setRunning(false)
+    }
   }
 
   return (
@@ -103,6 +113,10 @@ export function GobiernoGenerar({ onDone }: { onDone: () => void }) {
             )
           })}
         </ol>
+
+        {error && (
+          <p className="mt-4 text-sm font-medium text-destructive">{error}</p>
+        )}
 
         {finished && (
           <div className="mt-6 flex flex-col items-start gap-3 rounded-2xl bg-secondary/50 p-5 sm:flex-row sm:items-center sm:justify-between">
