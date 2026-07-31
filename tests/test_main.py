@@ -143,6 +143,68 @@ def test_generar_boletin_persiste_boletin_recomendacion_y_logs(api, load_fixture
     assert all(evento["boletin_id"] == cuerpo["id"] for evento in logs)
 
 
+def test_generar_boletin_duplicado_da_409(api, load_fixture, tmp_path, monkeypatch):
+    """POST dos veces la misma semana/año sin forzar debe devolver 409."""
+    cliente, fake_db, set_usuario = api
+    set_usuario(_usuario("gobierno"))
+
+    boletin = Boletin.model_validate(load_fixture("boletin.json"))
+    recomendacion = RecomendacionAgricola.model_validate(load_fixture("recomendacion_agricola.json"))
+    log_path = tmp_path / "log_agentes.jsonl"
+    eventos = [
+        {"agente": "explorador", "semana": 10, "timestamp": "t1", "mensaje": {}},
+        {"agente": "estadista", "semana": 10, "timestamp": "t2", "mensaje": {"hallazgos": []}},
+        {"agente": "narrador", "semana": 10, "timestamp": "t3", "mensaje": boletin.model_dump(mode="json")},
+        {"agente": "agronomo", "semana": 10, "timestamp": "t4", "mensaje": recomendacion.model_dump(mode="json")},
+    ]
+    log_path.write_text("\n".join(json.dumps(e) for e in eventos) + "\n", encoding="utf-8")
+    monkeypatch.setattr(main, "LOG_PATH", log_path)
+    monkeypatch.setattr(main, "orquestar", lambda **_: (boletin, recomendacion))
+
+    r1 = cliente.post("/api/boletin/generar", json={"semana": 10, "anio": 2024})
+    assert r1.status_code == 201
+
+    r2 = cliente.post("/api/boletin/generar", json={"semana": 10, "anio": 2024})
+    assert r2.status_code == 409
+    assert "regenerar" in r2.json()["detail"].lower() or "sobrescribir" in r2.json()["detail"].lower()
+
+
+def test_generar_boletin_duplicado_con_forzar_sobrescribe(api, load_fixture, tmp_path, monkeypatch):
+    """POST con forzar=true debe sobrescribir el boletín existente."""
+    cliente, fake_db, set_usuario = api
+    set_usuario(_usuario("gobierno"))
+
+    boletin = Boletin.model_validate(load_fixture("boletin.json"))
+    recomendacion = RecomendacionAgricola.model_validate(load_fixture("recomendacion_agricola.json"))
+    log_path = tmp_path / "log_agentes.jsonl"
+    eventos = [
+        {"agente": "explorador", "semana": 15, "timestamp": "t1", "mensaje": {}},
+        {"agente": "estadista", "semana": 15, "timestamp": "t2", "mensaje": {"hallazgos": []}},
+        {"agente": "narrador", "semana": 15, "timestamp": "t3", "mensaje": boletin.model_dump(mode="json")},
+        {"agente": "agronomo", "semana": 15, "timestamp": "t4", "mensaje": recomendacion.model_dump(mode="json")},
+    ]
+    log_path.write_text("\n".join(json.dumps(e) for e in eventos) + "\n", encoding="utf-8")
+    monkeypatch.setattr(main, "LOG_PATH", log_path)
+    monkeypatch.setattr(main, "orquestar", lambda **_: (boletin, recomendacion))
+
+    r1 = cliente.post("/api/boletin/generar", json={"semana": 15, "anio": 2024})
+    assert r1.status_code == 201
+    id1 = r1.json()["id"]
+
+    r2 = cliente.post("/api/boletin/generar", json={"semana": 15, "anio": 2024, "forzar": True})
+    assert r2.status_code == 201
+    assert r2.json()["id"] == id1
+
+
+def test_generar_boletin_duplicado_requiere_gobierno(api, load_fixture, tmp_path, monkeypatch):
+    """El endpoint de generar con forzar también requiere rol gobierno."""
+    cliente, _fake_db, set_usuario = api
+    set_usuario(_usuario("ayuntamiento"))
+
+    respuesta = cliente.post("/api/boletin/generar", json={"semana": 1, "anio": 2024, "forzar": True})
+    assert respuesta.status_code == 403
+
+
 # ── GET /api/boletin/{semana} ────────────────────────────────────────────
 
 

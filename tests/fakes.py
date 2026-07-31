@@ -50,6 +50,10 @@ class FakeQuery:
         self._payload = payload
         return self
 
+    def delete(self) -> "FakeQuery":
+        self._modo = "delete"
+        return self
+
     def eq(self, columna: str, valor: Any) -> "FakeQuery":
         self._filtros[columna] = valor
         return self
@@ -87,6 +91,14 @@ class FakeQuery:
                     fila.update(self._payload)
                     actualizadas.append(fila)
             return FakeResponse(actualizadas)
+
+        if self._modo == "delete":
+            filas = self._store.setdefault(self._tabla, [])
+            eliminadas = [f for f in filas if all(f.get(k) == v for k, v in self._filtros.items())]
+            self._store[self._tabla] = [
+                f for f in filas if not all(f.get(k) == v for k, v in self._filtros.items())
+            ]
+            return FakeResponse(eliminadas)
 
         resultado = [
             fila for fila in self._filas_base() if all(fila.get(k) == v for k, v in self._filtros.items())
