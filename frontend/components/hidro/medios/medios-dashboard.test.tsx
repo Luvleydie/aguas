@@ -102,4 +102,25 @@ describe("MediosDashboard", () => {
       expect(screen.getByText(s.anio)).toBeInTheDocument()
     }
   })
+
+  it("solo muestra boletines donde publicado=true", async () => {
+    const mixBoletines = [
+      { ...boletinesMock[0], publicado: true },
+      { ...boletinesMock[1], id: "bol-unpub", publicado: false },
+    ]
+    mockApiFetch.mockResolvedValue(mixBoletines)
+
+    render(<MediosDashboard onLogout={() => {}} token="tok" />)
+
+    expect(await screen.findByText(/Semana 52/)).toBeInTheDocument()
+    expect(screen.queryByText(/Semana 51/)).not.toBeInTheDocument()
+  })
+
+  it("si no hay boletines publicados, muestra un estado vacío claro", async () => {
+    mockApiFetch.mockResolvedValue([])
+
+    render(<MediosDashboard onLogout={() => {}} token="tok" />)
+
+    expect(await screen.findByText(/a[uú]n no hay boletines publicados/i)).toBeInTheDocument()
+  })
 })

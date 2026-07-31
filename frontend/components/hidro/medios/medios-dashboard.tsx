@@ -38,7 +38,8 @@ export function MediosDashboard({ onLogout, token }: { onLogout: () => void; tok
       .finally(() => setLoading(false))
   }, [token])
 
-  const boletinActualReal = boletines[0] ?? null
+  const boletinesPublicados = boletines.filter((b) => b.publicado)
+  const boletinActualReal = boletinesPublicados[0] ?? null
   const narrativo = boletinActualReal
     ? `${parseSeccionesBoletin(boletinActualReal.markdown).alerta} ${boletinActualReal.recomendacion}`
     : ""
@@ -53,10 +54,10 @@ export function MediosDashboard({ onLogout, token }: { onLogout: () => void; tok
           <h2 className="text-xl font-bold text-foreground">Boletines publicados</h2>
           {loading ? (
             <Loader2 size={24} className="animate-spin text-muted-foreground" />
-          ) : boletines.length === 0 ? (
-            <p className="text-muted-foreground">No hay boletines publicados.</p>
+          ) : boletinesPublicados.length === 0 ? (
+            <p className="text-muted-foreground">Aún no hay boletines publicados.</p>
           ) : (
-            boletines.map((b) => (
+            boletinesPublicados.map((b) => (
               <article key={b.id} className="flex items-center gap-5 rounded-3xl bg-card p-5 shadow-sm sm:p-6">
                 <Semaforo nivel={b.nivel} size="sm" showLabel={false} showScale={false} />
                 <div className="flex-1">
