@@ -27,7 +27,7 @@ export function TabsLayout({
   return (
     <div className="min-h-svh bg-background">
       <header className="bg-primary text-primary-foreground">
-        <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-5 py-4">
+        <div className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-5 py-4">
           <Logo size="sm" variant="light" />
           <div className="flex items-center gap-3">
             <span className="hidden text-sm text-primary-foreground/80 sm:inline">{roleName}</span>
@@ -41,7 +41,7 @@ export function TabsLayout({
             </button>
           </div>
         </div>
-        <nav className="mx-auto flex max-w-4xl gap-1 overflow-x-auto px-5">
+        <nav className="mx-auto flex max-w-2xl gap-1 overflow-x-auto px-5">
           {tabs.map((t) => {
             const isActive = t.id === active
             return (
@@ -63,7 +63,7 @@ export function TabsLayout({
           })}
         </nav>
       </header>
-      <main className="mx-auto max-w-4xl p-5 md:p-8">{children}</main>
+      <main className="mx-auto max-w-2xl p-5 md:p-8">{children}</main>
     </div>
   )
 }
