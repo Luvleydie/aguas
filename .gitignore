@@ -12,6 +12,9 @@ __v0_jsx-dev-runtime.ts
 !.env.example
 .env*.local
 
+# Claude Code machine-local permissions
+**/.claude/settings.local.json
+
 # Python
 .venv/
 __pycache__/
